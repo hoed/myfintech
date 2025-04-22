@@ -10,7 +10,12 @@ export const useUsers = () => {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const { data, error } = await supabase.auth.admin.listUsers();
+      // Instead of using admin.listUsers which requires special privileges,
+      // we'll get users from a regular table
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) {
         toast({
@@ -21,30 +26,23 @@ export const useUsers = () => {
         throw error;
       }
 
-      return data.users.map(user => ({
-        id: user.id,
-        name: user.user_metadata?.name || user.email?.split('@')[0] || 'Anonymous',
-        email: user.email || '',
-        role: user.user_metadata?.role || 'user',
-        avatar: user.user_metadata?.avatar,
-        is_active: !user.banned,
-        created_at: user.created_at,
-        updated_at: user.updated_at || user.created_at,
-      })) as User[];
+      return data as User[];
     },
   });
 
   const addUser = useMutation({
     mutationFn: async (newUser: { email: string, password: string, name: string, role: string }) => {
-      const { data, error } = await supabase.auth.admin.createUser({
-        email: newUser.email,
-        password: newUser.password,
-        user_metadata: {
+      // Create a new user in the users table
+      const { data, error } = await supabase
+        .from('users')
+        .insert([{
           name: newUser.name,
-          role: newUser.role
-        },
-        email_confirm: true
-      });
+          email: newUser.email,
+          role: newUser.role,
+          is_active: true
+        }])
+        .select()
+        .single();
 
       if (error) throw error;
       return data;
@@ -68,10 +66,12 @@ export const useUsers = () => {
 
   const toggleUserStatus = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string, isActive: boolean }) => {
-      // Use a different approach to ban/unban users
-      const { data, error } = isActive 
-        ? await supabase.auth.admin.updateUserById(userId, { ban_duration: '0 seconds' })
-        : await supabase.auth.admin.updateUserById(userId, { ban_duration: '100 years' });
+      const { data, error } = await supabase
+        .from('users')
+        .update({ is_active: !isActive })
+        .eq('id', userId)
+        .select()
+        .single();
 
       if (error) throw error;
       return data;

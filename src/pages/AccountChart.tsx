@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Account } from "@/types";
+import { Account, AccountType } from "@/types";
 import { useChartOfAccounts } from "@/hooks/useChartOfAccounts";
 
 const AccountChart = () => {
@@ -204,7 +204,7 @@ const AccountChart = () => {
                       value={newAccount.type}
                       onValueChange={(value) => setNewAccount({ 
                         ...newAccount, 
-                        type: value,
+                        type: value as AccountType,
                         subtype: "" // Reset subtype when type changes
                       })}
                     >
@@ -444,7 +444,7 @@ const AccountChart = () => {
                     onValueChange={(value) =>
                       setSelectedAccount({ 
                         ...selectedAccount, 
-                        type: value,
+                        type: value as AccountType,
                         subtype: "" // Reset subtype when type changes
                       })
                     }

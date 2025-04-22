@@ -1,168 +1,139 @@
-
-import { cn } from "@/lib/utils";
-import { Link, useLocation } from "react-router-dom";
+import React from "react";
 import {
-  LayoutDashboard, FileText, BookOpen, CreditCard, Calculator,
-  Calendar, BarChart, Users, Settings, DollarSign, ChevronLeft,
-  Store, Truck
+  Home,
+  Settings,
+  CreditCard,
+  BookOpenCheck,
+  Book,
+  Landmark,
+  Users,
+  ShoppingCart,
+  CircleDollarSign,
+  CalendarDays,
+  BarChart,
+  UserCog,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { NavLink } from "react-router-dom";
+import { usePathname } from "@/hooks/use-pathname";
+import { cn } from "@/lib/utils";
 
-interface NavItemProps {
+interface NavItem {
+  title: string;
   href: string;
-  icon: React.ReactNode;
-  label: string;
-  collapsed: boolean;
+  icon: any;
+  isSeparator: boolean;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ href, icon, label, collapsed }) => {
-  const location = useLocation();
-  const isActive = location.pathname === href;
+const Sidebar = () => {
+  const pathname = usePathname();
+
+  const navigationItems = [
+    {
+      title: "Dashboard",
+      href: "/",
+      icon: Home,
+      isSeparator: false,
+    },
+    {
+      title: "Transaksi",
+      href: "/transaksi",
+      icon: CreditCard,
+      isSeparator: false,
+    },
+    {
+      title: "Bagan Akun",
+      href: "/bagan-akun",
+      icon: BookOpenCheck,
+      isSeparator: false,
+    },
+    {
+      title: "Buku Besar",
+      href: "/buku-besar",
+      icon: Book,
+      isSeparator: false,
+    },
+    {
+      title: "Rekening Bank",
+      href: "/rekening",
+      icon: Landmark,
+      isSeparator: false,
+    },
+    {
+      title: "Hutang & Piutang",
+      href: "/hutang-piutang",
+      icon: CreditCard,
+      isSeparator: false,
+    },
+    {
+      title: "Pelanggan",
+      href: "/pelanggan",
+      icon: Users,
+      isSeparator: false,
+    },
+    {
+      title: "Pemasok",
+      href: "/pemasok",
+      icon: ShoppingCart,
+      isSeparator: false,
+    },
+    {
+      title: "Inventaris",
+      href: "/inventaris",
+      icon: CircleDollarSign,
+      isSeparator: false,
+    },
+    {
+      title: "Kalender",
+      href: "/kalender",
+      icon: CalendarDays,
+      isSeparator: false,
+    },
+    {
+      title: "Laporan",
+      href: "/laporan",
+      icon: BarChart,
+      isSeparator: false,
+    },
+    {
+      title: "Pengguna",
+      href: "/pengguna",
+      icon: UserCog,
+      isSeparator: false,
+    },
+    {
+      title: "Pengaturan",
+      href: "/pengaturan",
+      icon: Settings,
+      isSeparator: false,
+    },
+  ];
 
   return (
-    <Link
-      to={href}
-      className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all",
-        isActive
-          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-          : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
-      )}
-    >
-      {icon}
-      {!collapsed && <span>{label}</span>}
-    </Link>
-  );
-};
-
-interface SidebarProps {
-  collapsed: boolean;
-  onCollapsedChange: (collapsed: boolean) => void;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapsedChange }) => {
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Berhasil Logout",
-        description: "Anda telah keluar dari sistem.",
-      });
-      navigate("/login");
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Gagal Logout",
-        description: error.message || "Terjadi kesalahan saat logout",
-      });
-    }
-  };
-
-  return (
-    <aside className={cn(
-      "hidden md:flex h-screen flex-col bg-sidebar fixed inset-y-0 z-50 transition-all duration-300",
-      collapsed ? "w-16" : "w-64"
-    )}>
-      <div className="border-b border-sidebar-border px-6 py-5 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white">
-          <DollarSign size={24} className="text-sidebar-primary" />
-          {!collapsed && <span>Keuangan Mandiri</span>}
-        </Link>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onCollapsedChange(!collapsed)}
-          className="text-white"
-        >
-          <ChevronLeft className={cn(
-            "h-4 w-4 transition-transform",
-            collapsed && "rotate-180"
-          )} />
-        </Button>
+    <div className="flex flex-col h-full bg-gray-50 border-r py-4">
+      <div className="px-4">
+        <h1 className="text-2xl font-bold">Keuangan Mandiri</h1>
+        <p className="text-sm text-gray-500">v1.0.0</p>
       </div>
-
-      <div className="flex-1 overflow-hidden py-4 px-4 hover:overflow-y-auto">
-        <nav className="grid gap-1">
-          <NavItem
-            href="/"
-            icon={<LayoutDashboard size={20} />}
-            label="Dashboard"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/akun"
-            icon={<FileText size={20} />}
-            label="Bagan Akun"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/transaksi"
-            icon={<BookOpen size={20} />}
-            label="Transaksi"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/buku-besar"
-            icon={<BookOpen size={20} />}
-            label="Buku Besar"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/rekening-bank"
-            icon={<CreditCard size={20} />}
-            label="Rekening Bank"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/hutang-piutang"
-            icon={<Calculator size={20} />}
-            label="Hutang & Piutang"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/kalender"
-            icon={<Calendar size={20} />}
-            label="Kalender"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/laporan"
-            icon={<BarChart size={20} />}
-            label="Laporan"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/pengguna"
-            icon={<Users size={20} />}
-            label="Manajemen Pengguna"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/pengaturan"
-            icon={<Settings size={20} />}
-            label="Pengaturan"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/pelanggan"
-            icon={<Store size={20} />}
-            label="Pelanggan"
-            collapsed={collapsed}
-          />
-          <NavItem
-            href="/pemasok"
-            icon={<Truck size={20} />}
-            label="Pemasok"
-            collapsed={collapsed}
-          />
-        </nav>
-      </div>
-    </aside>
+      <nav className="flex flex-col flex-1 px-2 mt-4 space-y-1">
+        {navigationItems.map((item) => (
+          <NavLink
+            key={item.href}
+            to={item.href}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-200",
+                isActive
+                  ? "bg-gray-200 text-gray-900"
+                  : "text-gray-700"
+              )
+            }
+          >
+            <item.icon className="w-4 h-4 mr-2" />
+            {item.title}
+          </NavLink>
+        ))}
+      </nav>
+    </div>
   );
 };
 
