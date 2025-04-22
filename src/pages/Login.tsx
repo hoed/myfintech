@@ -157,7 +157,7 @@ const Login = () => {
         </div>
       </div>
       <footer className="text-center text-sm text-gray-500 mt-8">
-        © 2025 MyFinTech. Semua Hak Dilindungi.
+        © 2025 Hoed - MyFinTech. Semua Hak Dilindungi.
       </footer>
     </div>
   );
