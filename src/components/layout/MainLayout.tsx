@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import MobileSidebar from "./MobileSidebar";
@@ -7,7 +6,7 @@ import Footer from "./Footer";
 import { Toaster } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -64,7 +63,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <div className="flex h-screen bg-gray-50">
       {!isMobile && (
         <div className={`${sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-64'} transition-all duration-300 ease-in-out h-screen`}>
-          <Sidebar />
+          <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
         </div>
       )}
       <div className="flex-1 overflow-auto flex flex-col">
@@ -81,7 +80,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </Button>
           )}
           <main className="p-4 md:p-6 flex-1">
-            {children}
+            <Outlet />
           </main>
         </div>
         <Footer />

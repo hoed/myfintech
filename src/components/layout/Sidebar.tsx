@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Home,
@@ -13,6 +12,8 @@ import {
   CalendarDays,
   BarChart,
   UserCog,
+  ChevronLeft, // Import ChevronLeft icon
+  ChevronRight, // Import ChevronRight icon
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { usePathname } from "@/hooks/use-pathname";
@@ -25,7 +26,12 @@ interface NavItem {
   isSeparator: boolean;
 }
 
-const Sidebar = () => {
+interface SidebarProps {
+  isCollapsed: boolean;
+  onToggle: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const pathname = usePathname();
 
   const navigationItems = [
@@ -110,9 +116,20 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground py-4 overflow-y-auto">
-      <div className="px-4">
+    <div className={cn(
+      "flex flex-col h-full bg-sidebar text-sidebar-foreground py-4 overflow-y-auto",
+      isCollapsed ? "w-16" : "w-64" // Adjust width based on collapsed state
+    )}>
+      <div className="flex items-center justify-between px-4">
         <h1 className="text-2xl font-bold">MyFinTech System</h1>
+        <button
+          onClick={onToggle}
+          className="p-1 rounded-md hover:bg-sidebar-accent/30"
+        >
+          {isCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+        </button>
+      </div>
+      <div className="px-4">
         <p className="text-sm text-sidebar-foreground/70">v1.0.0</p>
       </div>
       <nav className="flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-y-auto">
