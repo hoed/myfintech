@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,8 +22,10 @@ import {
   ResponsiveContainer 
 } from "recharts";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useReports } from "@/hooks/useReports";
 
 const Reports = () => {
+  const { reports, isLoading, addReport } = useReports();
   const [reportPeriod, setReportPeriod] = useState("bulan-ini");
   const [activeTab, setActiveTab] = useState("laporan-keuangan");
 
@@ -76,6 +77,22 @@ const Reports = () => {
     }
     return null;
   };
+
+  useEffect(() => {
+    const generateReport = async () => {
+      if (reportPeriod === "bulan-ini") {
+        const now = new Date();
+        await addReport.mutateAsync({
+          date: now.toISOString(),
+          type: 'monthly',
+          income: monthlyData[monthlyData.length - 1].pendapatan,
+          expense: monthlyData[monthlyData.length - 1].pengeluaran,
+        });
+      }
+    };
+
+    generateReport();
+  }, [reportPeriod]);
 
   return (
     <MainLayout>

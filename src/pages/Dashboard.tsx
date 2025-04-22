@@ -1,4 +1,3 @@
-
 import React from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import DashboardCard from "@/components/dashboard/DashboardCard";
@@ -91,7 +90,7 @@ const Dashboard = () => {
   // Calculate total debt
   const totalDebt = debtReceivables && debtReceivables.length > 0
     ? debtReceivables
-        .filter(dr => dr.type === 'debt' && dr.status !== 'paid')
+        .filter(dr => dr.type === 'hutang' && dr.status !== 'lunas')
         .reduce((total, dr) => total + dr.amount, 0)
     : 0;
 

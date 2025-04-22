@@ -347,6 +347,39 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          created_at: string | null
+          date: string
+          expense: number | null
+          id: string
+          income: number | null
+          profit: number | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          expense?: number | null
+          id?: string
+          income?: number | null
+          profit?: number | null
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          expense?: number | null
+          id?: string
+          income?: number | null
+          profit?: number | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       suppliers: {
         Row: {
           address: string | null

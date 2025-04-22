@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -40,11 +39,11 @@ const AccountChart = () => {
   });
 
   const accountTypes = [
-    { value: "aset", label: "Aset" },
-    { value: "kewajiban", label: "Kewajiban" },
-    { value: "ekuitas", label: "Ekuitas" },
-    { value: "pendapatan", label: "Pendapatan" },
-    { value: "biaya", label: "Biaya" },
+    { value: "aset" as const, label: "Aset" },
+    { value: "kewajiban" as const, label: "Kewajiban" },
+    { value: "ekuitas" as const, label: "Ekuitas" },
+    { value: "pendapatan" as const, label: "Pendapatan" },
+    { value: "beban" as const, label: "Beban" },
   ];
 
   const subtypeOptions = {
@@ -65,9 +64,9 @@ const AccountChart = () => {
       { value: "operasional", label: "Pendapatan Operasional" },
       { value: "non_operasional", label: "Pendapatan Non-Operasional" },
     ],
-    biaya: [
-      { value: "operasional", label: "Biaya Operasional" },
-      { value: "non_operasional", label: "Biaya Non-Operasional" },
+    beban: [
+      { value: "operasional", label: "Beban Operasional" },
+      { value: "non_operasional", label: "Beban Non-Operasional" },
     ],
   };
 
@@ -88,7 +87,7 @@ const AccountChart = () => {
     kewajiban: "Kewajiban",
     ekuitas: "Ekuitas",
     pendapatan: "Pendapatan",
-    biaya: "Biaya",
+    beban: "Beban",
   };
 
   const handleAddAccount = () => {
@@ -305,7 +304,7 @@ const AccountChart = () => {
               <SelectItem value="kewajiban">Kewajiban</SelectItem>
               <SelectItem value="ekuitas">Ekuitas</SelectItem>
               <SelectItem value="pendapatan">Pendapatan</SelectItem>
-              <SelectItem value="biaya">Biaya</SelectItem>
+              <SelectItem value="beban">Beban</SelectItem>
             </SelectContent>
           </Select>
         </div>

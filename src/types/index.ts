@@ -1,4 +1,3 @@
-
 export interface Account {
   id: string;
   code: string;
@@ -54,13 +53,16 @@ export interface User {
   updated_at: string;
 }
 
+export type DebtReceivableType = 'hutang' | 'piutang';
+export type DebtReceivableStatus = 'belum_dibayar' | 'sebagian_dibayar' | 'lunas';
+
 export interface DebtReceivable {
   id: string;
-  type: 'hutang' | 'piutang';
+  type: DebtReceivableType;
   entity_name: string;
   amount: number;
   due_date: string;
-  status: 'belum_dibayar' | 'sebagian_dibayar' | 'lunas';
+  status: DebtReceivableStatus;
   description?: string;
   created_at: string;
   updated_at: string;
@@ -73,4 +75,15 @@ export interface CurrencyExchange {
   rate: number;
   effectiveDate: string;
   updatedAt: string;
+}
+
+export interface Report {
+  id: string;
+  date: string;
+  type: 'daily' | 'monthly' | 'yearly';
+  income: number;
+  expense: number;
+  profit: number;
+  created_at: string;
+  updated_at: string;
 }
