@@ -136,13 +136,12 @@ const Ledger = () => {
     return true;
   });
 
-  // Calculate running balance - Fixed the error by declaring ledgerEntries before using it
-  let initialBalance = 0;
-  const ledgerEntries = filteredTransactions.map((transaction, index) => {
-    const previousBalance = index === 0 ? initialBalance : ledgerEntries[index - 1]?.runningBalance || 0;
+  // Fix the circular reference by calculating the running balance without referring to ledgerEntries
+  let runningBalance = 0;
+  const ledgerEntries = filteredTransactions.map((transaction) => {
     const amount = transaction.type === "debit" ? transaction.amount : -transaction.amount;
-    const runningBalance = previousBalance + amount;
-
+    runningBalance += amount;
+    
     return {
       ...transaction,
       runningBalance,
@@ -293,7 +292,7 @@ const Ledger = () => {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      ledgerEntries.map((entry, index) => (
+                      ledgerEntries.map((entry) => (
                         <TableRow key={entry.id}>
                           <TableCell>{formatDate(entry.date)}</TableCell>
                           <TableCell>{entry.description}</TableCell>
