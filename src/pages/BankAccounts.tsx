@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -32,8 +33,18 @@ type BankAccountFormData = z.infer<typeof bankAccountSchema>;
 const BankAccounts = () => {
   const { bankAccounts, isLoading, addBankAccount } = useBankAccounts();
   const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState<BankAccountFormData>({
+    name: "",
+    account_number: "",
+    bank_name: "",
+    currency: "IDR",
+    balance: 0,
+    description: "",
+    is_active: true
+  });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const form = useForm<BankAccountFormData>({
+  const form = useForm<z.infer<typeof bankAccountSchema>>({
     resolver: zodResolver(bankAccountSchema),
     defaultValues: {
       name: "",
@@ -46,8 +57,44 @@ const BankAccounts = () => {
     },
   });
 
-  const onSubmit = async (values: BankAccountFormData) => {
+  const handleAddAccount = () => {
+    if (!formData.name || !formData.account_number || !formData.bank_name || !formData.currency) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Semua field wajib diisi",
+      });
+      return;
+    }
+
+    // Make sure all required fields are properly defined
+    const newAccount: Omit<BankAccount, "id" | "created_at" | "updated_at"> = {
+      name: formData.name,
+      account_number: formData.account_number,
+      bank_name: formData.bank_name,
+      currency: formData.currency,
+      balance: formData.balance,
+      description: formData.description || "",
+      is_active: formData.is_active
+    };
+    
+    addBankAccount.mutate(newAccount);
+
+    setFormData({
+      name: "",
+      account_number: "",
+      bank_name: "",
+      currency: "IDR",
+      balance: 0,
+      description: "",
+      is_active: true
+    });
+    setIsDialogOpen(false);
+  };
+
+  const onSubmit = async (values: z.infer<typeof bankAccountSchema>) => {
     try {
+      // Ensure all required properties are provided
       const newAccount: Omit<BankAccount, "id" | "created_at" | "updated_at"> = {
         name: values.name,
         account_number: values.account_number,
@@ -59,19 +106,10 @@ const BankAccounts = () => {
       };
       
       await addBankAccount.mutateAsync(newAccount);
-      toast({
-        title: "Berhasil",
-        description: "Rekening bank berhasil ditambahkan.",
-      });
       setOpen(false);
       form.reset();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error adding bank account:", error);
-      toast({
-        variant: "destructive",
-        title: "Gagal",
-        description: error.message || "Terjadi kesalahan saat menambahkan rekening bank.",
-      });
     }
   };
 
