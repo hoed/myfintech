@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -9,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { useState } from "react";
 
 interface NavItemProps {
   href: string;
@@ -38,9 +38,13 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, collapsed }) => {
   );
 };
 
-const Sidebar = () => {
+interface SidebarProps {
+  collapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapsedChange }) => {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -72,7 +76,7 @@ const Sidebar = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={() => onCollapsedChange(!collapsed)}
           className="text-white"
         >
           <ChevronLeft className={cn(

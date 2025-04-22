@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import MobileSidebar from "./MobileSidebar";
@@ -16,6 +17,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -33,7 +35,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     };
 
     checkAuth();
+
+    // Check for sidebar collapse preference in localStorage
+    const savedState = localStorage.getItem('sidebarCollapsed');
+    if (savedState) {
+      setSidebarCollapsed(savedState === 'true');
+    }
   }, [navigate]);
+
+  // Function to toggle sidebar state
+  const toggleSidebar = (collapsed: boolean) => {
+    setSidebarCollapsed(collapsed);
+    localStorage.setItem('sidebarCollapsed', String(collapsed));
+  };
 
   if (isLoading) {
     return (
@@ -45,8 +59,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {!isMobile && <Sidebar />}
-      <div className="flex-1 overflow-auto flex flex-col md:ml-64">
+      {!isMobile && <Sidebar collapsed={sidebarCollapsed} onCollapsedChange={toggleSidebar} />}
+      <div className={`flex-1 overflow-auto flex flex-col ${!isMobile ? (sidebarCollapsed ? 'md:ml-16' : 'md:ml-64') : ''} transition-all duration-300`}>
         <Header />
         <main className="p-4 md:p-6 flex-1">
           {children}

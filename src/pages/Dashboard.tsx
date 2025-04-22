@@ -15,7 +15,7 @@ import { useDebtReceivables } from "@/hooks/useDebtReceivables";
 const Dashboard = () => {
   const { accounts } = useChartOfAccounts();
   const { transactions } = useTransactions();
-  const { debtsReceivables } = useDebtReceivables();
+  const { debtReceivables } = useDebtReceivables();
 
   // Sample data for demonstration purposes
   const dailyData = [
@@ -46,55 +46,69 @@ const Dashboard = () => {
   ];
 
   // Calculate total balance from chart of accounts
-  const totalAssets = accounts
-    .filter(account => account.type === 'aset' && account.is_active)
-    .reduce((total, account) => total + (account.balance || 0), 0);
+  const totalAssets = accounts && accounts.length > 0
+    ? accounts
+        .filter(account => account.type === 'aset' && account.is_active)
+        .reduce((total, account) => total + (account.balance || 0), 0)
+    : 0;
 
-  const totalLiabilities = accounts
-    .filter(account => account.type === 'kewajiban' && account.is_active)
-    .reduce((total, account) => total + (account.balance || 0), 0);
+  const totalLiabilities = accounts && accounts.length > 0
+    ? accounts
+        .filter(account => account.type === 'kewajiban' && account.is_active)
+        .reduce((total, account) => total + (account.balance || 0), 0)
+    : 0;
 
-  const totalEquity = accounts
-    .filter(account => account.type === 'ekuitas' && account.is_active)
-    .reduce((total, account) => total + (account.balance || 0), 0);
+  const totalEquity = accounts && accounts.length > 0
+    ? accounts
+        .filter(account => account.type === 'ekuitas' && account.is_active)
+        .reduce((total, account) => total + (account.balance || 0), 0)
+    : 0;
 
   // Calculate monthly income and expense
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   
-  const monthlyIncome = transactions
-    .filter(tx => 
-      tx.type === 'income' && 
-      new Date(tx.date).getMonth() === currentMonth && 
-      new Date(tx.date).getFullYear() === currentYear
-    )
-    .reduce((total, tx) => total + tx.amount, 0);
+  const monthlyIncome = transactions && transactions.length > 0
+    ? transactions
+        .filter(tx => 
+          tx.type === 'income' && 
+          new Date(tx.date).getMonth() === currentMonth && 
+          new Date(tx.date).getFullYear() === currentYear
+        )
+        .reduce((total, tx) => total + tx.amount, 0)
+    : 0;
 
-  const monthlyExpense = transactions
-    .filter(tx => 
-      tx.type === 'expense' && 
-      new Date(tx.date).getMonth() === currentMonth && 
-      new Date(tx.date).getFullYear() === currentYear
-    )
-    .reduce((total, tx) => total + tx.amount, 0);
+  const monthlyExpense = transactions && transactions.length > 0
+    ? transactions
+        .filter(tx => 
+          tx.type === 'expense' && 
+          new Date(tx.date).getMonth() === currentMonth && 
+          new Date(tx.date).getFullYear() === currentYear
+        )
+        .reduce((total, tx) => total + tx.amount, 0)
+    : 0;
 
   // Calculate total debt
-  const totalDebt = debtsReceivables
-    .filter(dr => dr.type === 'debt' && dr.status !== 'paid')
-    .reduce((total, dr) => total + dr.amount, 0);
+  const totalDebt = debtReceivables && debtReceivables.length > 0
+    ? debtReceivables
+        .filter(dr => dr.type === 'debt' && dr.status !== 'paid')
+        .reduce((total, dr) => total + dr.amount, 0)
+    : 0;
 
   // Get recent transactions
-  const recentTransactions = transactions
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5)
-    .map(tx => ({
-      id: tx.id,
-      date: tx.date,
-      description: tx.description || '',
-      amount: tx.amount,
-      type: tx.type as 'income' | 'expense',
-      account: accounts.find(a => a.id === tx.account_id)?.name || '',
-    }));
+  const recentTransactions = transactions && transactions.length > 0 && accounts && accounts.length > 0
+    ? transactions
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 5)
+        .map(tx => ({
+          id: tx.id,
+          date: tx.date,
+          description: tx.description || '',
+          amount: tx.amount,
+          type: tx.type as 'income' | 'expense',
+          account: accounts.find(a => a.id === tx.account_id)?.name || '',
+        }))
+    : [];
 
   return (
     <MainLayout>
