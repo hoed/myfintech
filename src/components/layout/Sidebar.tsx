@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Home,
@@ -110,10 +109,10 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 border-r py-4">
+    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground py-4">
       <div className="px-4">
         <h1 className="text-2xl font-bold">Keuangan Mandiri</h1>
-        <p className="text-sm text-gray-500">v1.0.0</p>
+        <p className="text-sm text-sidebar-foreground/70">v1.0.0</p>
       </div>
       <nav className="flex flex-col flex-1 px-2 mt-4 space-y-1">
         {navigationItems.map((item) => (
@@ -122,10 +121,10 @@ const Sidebar = () => {
             to={item.href}
             className={({ isActive }) =>
               cn(
-                "flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-200",
+                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
                 isActive
-                  ? "bg-gray-200 text-gray-900"
-                  : "text-gray-700"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
               )
             }
           >
