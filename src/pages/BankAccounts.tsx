@@ -15,7 +15,7 @@ import * as z from "zod";
 import { useBankAccounts } from "@/hooks/useBankAccounts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, DollarSign, PlusCircle } from "lucide-react";
-import { toast } from "@/components/ui/toast";
+import { toast } from "@/hooks/use-toast";
 
 const bankAccountSchema = z.object({
   name: z.string().min(3, { message: "Nama rekening minimal 3 karakter" }),
@@ -74,7 +74,6 @@ const BankAccounts = () => {
       is_active: true
     });
 
-    // Reset form
     setFormData({
       name: "",
       account_number: "",
