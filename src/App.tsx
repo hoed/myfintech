@@ -19,6 +19,7 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import InitializeAdmin from "./pages/InitializeAdmin";
 import Inventory from "./pages/Inventory";
+import { Analytics } from "@vercel/analytics/react"
 
 // Create the query client outside of the component
 const queryClient = new QueryClient();
