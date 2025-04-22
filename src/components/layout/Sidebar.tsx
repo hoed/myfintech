@@ -11,8 +11,6 @@ import {
   Users,
   Settings,
   DollarSign,
-  User,
-  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -74,7 +72,7 @@ const Sidebar = () => {
         </Link>
       </div>
 
-      <div className="flex-1 overflow-auto py-4 px-4">
+      <div className="flex-1 overflow-hidden py-4 px-4 hover:overflow-y-auto">
         <nav className="grid gap-1">
           <NavItem
             href="/"
@@ -127,38 +125,6 @@ const Sidebar = () => {
             label="Pengaturan"
           />
         </nav>
-      </div>
-
-      <div className="mt-auto border-t border-sidebar-border p-4">
-        <div className="flex items-center gap-3 rounded-lg bg-sidebar-accent/50 px-3 py-2">
-          <div className="h-9 w-9 rounded-full bg-sidebar-primary flex items-center justify-center text-white">
-            AD
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-sidebar-foreground truncate">Admin Sistem</p>
-            <p className="text-xs text-sidebar-foreground/70 truncate">admin@example.com</p>
-          </div>
-        </div>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full justify-start text-sidebar-foreground"
-            onClick={() => navigate("/profil")}
-          >
-            <User size={16} className="mr-2" />
-            Profil
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full justify-start text-sidebar-foreground"
-            onClick={handleLogout}
-          >
-            <LogOut size={16} className="mr-2" />
-            Logout
-          </Button>
-        </div>
       </div>
     </aside>
   );

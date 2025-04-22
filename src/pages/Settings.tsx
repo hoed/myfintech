@@ -1,4 +1,3 @@
-
 import React from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,8 +8,70 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
+import { useAppSettings } from "@/hooks/useAppSettings";
+import { useApiKeys } from "@/hooks/useApiKeys";
+import { toast } from "@/hooks/use-toast";
 
 const Settings = () => {
+  const { settings: companySettings, updateSettings } = useCompanySettings();
+  const { settings: appSettings, updateSetting } = useAppSettings();
+  const { apiKeys, createApiKey, deleteApiKey } = useApiKeys();
+
+  const handleCompanyUpdate = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const newSettings = {
+      company_name: formData.get('company-name'),
+      company_address: formData.get('company-address'),
+      company_phone: formData.get('company-phone'),
+      company_email: formData.get('company-email'),
+      company_tax_id: formData.get('company-tax-id'),
+    };
+    updateSettings(newSettings);
+  };
+
+  const handleAppSettingChange = (key: string, value: any) => {
+    updateSetting({ key, value });
+  };
+
+  const handleCreateApiKey = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    createApiKey({
+      key_name: formData.get('key-name') as string,
+      service_type: formData.get('service-type') as string,
+    });
+  };
+
+  const handleBackup = async () => {
+    try {
+      const { data: tables, error: tablesError } = await supabase
+        .from('backup_history')
+        .insert({
+          backup_name: `Backup_${new Date().toISOString()}`,
+          backup_data: {
+            timestamp: new Date().toISOString(),
+            settings: companySettings,
+            app_settings: appSettings,
+          },
+        });
+
+      if (tablesError) throw tablesError;
+
+      toast({
+        title: "Backup Created",
+        description: "Your data has been successfully backed up",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to create backup",
+      });
+    }
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -25,7 +86,7 @@ const Settings = () => {
           <TabsList>
             <TabsTrigger value="general">Umum</TabsTrigger>
             <TabsTrigger value="company">Informasi Perusahaan</TabsTrigger>
-            <TabsTrigger value="currency">Mata Uang</TabsTrigger>
+            <TabsTrigger value="api-keys">API Keys</TabsTrigger>
             <TabsTrigger value="backup">Backup & Restore</TabsTrigger>
           </TabsList>
           
@@ -39,13 +100,20 @@ const Settings = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Switch id="auto-backup" />
+                  <Switch 
+                    id="auto-backup" 
+                    checked={appSettings?.auto_backup}
+                    onCheckedChange={(checked) => handleAppSettingChange('auto_backup', checked)}
+                  />
                   <Label htmlFor="auto-backup">Backup Otomatis</Label>
                 </div>
                 <Separator />
                 <div className="space-y-2">
                   <Label htmlFor="date-format">Format Tanggal</Label>
-                  <Select defaultValue="dd-MM-yyyy">
+                  <Select 
+                    value={appSettings?.date_format}
+                    onValueChange={(value) => handleAppSettingChange('date_format', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih format tanggal" />
                     </SelectTrigger>
@@ -58,10 +126,13 @@ const Settings = () => {
                 </div>
                 <Separator />
                 <div className="flex items-center space-x-2">
-                  <Switch id="dark-mode" />
+                  <Switch 
+                    id="dark-mode" 
+                    checked={appSettings?.dark_mode}
+                    onCheckedChange={(checked) => handleAppSettingChange('dark_mode', checked)}
+                  />
                   <Label htmlFor="dark-mode">Mode Gelap</Label>
                 </div>
-                <Button>Simpan Pengaturan</Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -74,62 +145,82 @@ const Settings = () => {
                   Detail perusahaan untuk dokumen dan laporan
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="company-name">Nama Perusahaan</Label>
-                  <Input id="company-name" placeholder="PT Sukses Makmur" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company-address">Alamat</Label>
-                  <Input id="company-address" placeholder="Jl. Jenderal Sudirman No. 123" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company-phone">Telepon</Label>
-                  <Input id="company-phone" placeholder="+62 21 12345678" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company-email">Email</Label>
-                  <Input id="company-email" type="email" placeholder="info@perusahaan.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company-tax-id">NPWP</Label>
-                  <Input id="company-tax-id" placeholder="01.234.567.8-012.345" />
-                </div>
-                <Button>Simpan Informasi Perusahaan</Button>
+              <CardContent>
+                <form onSubmit={handleCompanyUpdate} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="company-name">Nama Perusahaan</Label>
+                    <Input id="company-name" placeholder="PT Sukses Makmur" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="company-address">Alamat</Label>
+                    <Input id="company-address" placeholder="Jl. Jenderal Sudirman No. 123" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="company-phone">Telepon</Label>
+                    <Input id="company-phone" placeholder="+62 21 12345678" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="company-email">Email</Label>
+                    <Input id="company-email" type="email" placeholder="info@perusahaan.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="company-tax-id">NPWP</Label>
+                    <Input id="company-tax-id" placeholder="01.234.567.8-012.345" />
+                  </div>
+                  <Button type="submit">Simpan Informasi Perusahaan</Button>
+                </form>
               </CardContent>
             </Card>
           </TabsContent>
           
-          <TabsContent value="currency" className="space-y-4">
+          <TabsContent value="api-keys" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Pengaturan Mata Uang</CardTitle>
+                <CardTitle>API Keys</CardTitle>
                 <CardDescription>
-                  Konfigurasi mata uang dan kurs tukar
+                  Kelola API keys untuk integrasi sistem
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="default-currency">Mata Uang Utama</Label>
-                  <Select defaultValue="IDR">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih mata uang utama" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="IDR">Rupiah (IDR)</SelectItem>
-                      <SelectItem value="USD">US Dollar (USD)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Separator />
-                <div className="space-y-2">
-                  <Label htmlFor="exchange-rate">Kurs USD ke IDR</Label>
-                  <div className="flex gap-2">
-                    <Input id="exchange-rate" placeholder="15,000" />
-                    <Button variant="outline">Update Kurs</Button>
+                <form onSubmit={handleCreateApiKey} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="key-name">Nama API Key</Label>
+                    <Input id="key-name" name="key-name" placeholder="e.g., Inventory Integration" required />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="service-type">Tipe Service</Label>
+                    <Select name="service-type" required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih tipe service" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="inventory">Inventory</SelectItem>
+                        <SelectItem value="accounting">Accounting</SelectItem>
+                        <SelectItem value="payment">Payment</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button type="submit">Generate API Key</Button>
+                </form>
+                <Separator />
+                <div className="space-y-4">
+                  <h3 className="font-medium">API Keys Aktif</h3>
+                  {apiKeys?.map((key) => (
+                    <div key={key.id} className="flex items-center justify-between p-2 border rounded">
+                      <div>
+                        <p className="font-medium">{key.key_name}</p>
+                        <p className="text-sm text-muted-foreground">{key.service_type}</p>
+                      </div>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => deleteApiKey(key.id)}
+                      >
+                        Hapus
+                      </Button>
+                    </div>
+                  ))}
                 </div>
-                <Button>Simpan Pengaturan Mata Uang</Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -146,15 +237,9 @@ const Settings = () => {
                 <div className="space-y-2">
                   <Label>Backup Manual</Label>
                   <div className="flex gap-2">
-                    <Button variant="outline">Backup Data Sekarang</Button>
-                  </div>
-                </div>
-                <Separator />
-                <div className="space-y-2">
-                  <Label>Restore dari Backup</Label>
-                  <div className="flex gap-2">
-                    <Input id="restore-file" type="file" />
-                    <Button variant="outline">Restore</Button>
+                    <Button variant="outline" onClick={handleBackup}>
+                      Backup Data Sekarang
+                    </Button>
                   </div>
                 </div>
               </CardContent>
