@@ -1,3 +1,4 @@
+
 import React from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,24 +10,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
-import { useAppSettings } from "@/hooks/useAppSettings";
+import { useAppSettings, AppSettings } from "@/hooks/useAppSettings";
 import { useApiKeys } from "@/hooks/useApiKeys";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Settings = () => {
-  const { settings: companySettings, updateSettings } = useCompanySettings();
-  const { settings: appSettings, updateSetting } = useAppSettings();
-  const { apiKeys, createApiKey, deleteApiKey } = useApiKeys();
+  const { settings: companySettings, updateSettings, isLoading: companyLoading } = useCompanySettings();
+  const { settings: appSettings, updateSetting, isLoading: appLoading } = useAppSettings();
+  const { apiKeys, createApiKey, deleteApiKey, isLoading: apiKeysLoading } = useApiKeys();
 
   const handleCompanyUpdate = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const newSettings = {
-      company_name: formData.get('company-name'),
-      company_address: formData.get('company-address'),
-      company_phone: formData.get('company-phone'),
-      company_email: formData.get('company-email'),
-      company_tax_id: formData.get('company-tax-id'),
+      company_name: String(formData.get('company-name') || ''),
+      company_address: String(formData.get('company-address') || ''),
+      company_phone: String(formData.get('company-phone') || ''),
+      company_email: String(formData.get('company-email') || ''),
+      company_tax_id: String(formData.get('company-tax-id') || ''),
     };
     updateSettings(newSettings);
   };
@@ -39,14 +41,15 @@ const Settings = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     createApiKey({
-      key_name: formData.get('key-name') as string,
-      service_type: formData.get('service-type') as string,
+      key_name: String(formData.get('key-name') || ''),
+      service_type: String(formData.get('service-type') || ''),
     });
+    (event.target as HTMLFormElement).reset();
   };
 
   const handleBackup = async () => {
     try {
-      const { data: tables, error: tablesError } = await supabase
+      const { data, error } = await supabase
         .from('backup_history')
         .insert({
           backup_name: `Backup_${new Date().toISOString()}`,
@@ -57,7 +60,7 @@ const Settings = () => {
           },
         });
 
-      if (tablesError) throw tablesError;
+      if (error) throw error;
 
       toast({
         title: "Backup Created",
@@ -71,6 +74,16 @@ const Settings = () => {
       });
     }
   };
+
+  if (companyLoading || appLoading || apiKeysLoading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-full">
+          <p>Loading...</p>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -102,7 +115,7 @@ const Settings = () => {
                 <div className="flex items-center space-x-2">
                   <Switch 
                     id="auto-backup" 
-                    checked={appSettings?.auto_backup}
+                    checked={appSettings?.auto_backup || false}
                     onCheckedChange={(checked) => handleAppSettingChange('auto_backup', checked)}
                   />
                   <Label htmlFor="auto-backup">Backup Otomatis</Label>
@@ -111,7 +124,7 @@ const Settings = () => {
                 <div className="space-y-2">
                   <Label htmlFor="date-format">Format Tanggal</Label>
                   <Select 
-                    value={appSettings?.date_format}
+                    value={appSettings?.date_format || "dd-MM-yyyy"}
                     onValueChange={(value) => handleAppSettingChange('date_format', value)}
                   >
                     <SelectTrigger>
@@ -128,7 +141,7 @@ const Settings = () => {
                 <div className="flex items-center space-x-2">
                   <Switch 
                     id="dark-mode" 
-                    checked={appSettings?.dark_mode}
+                    checked={appSettings?.dark_mode || false}
                     onCheckedChange={(checked) => handleAppSettingChange('dark_mode', checked)}
                   />
                   <Label htmlFor="dark-mode">Mode Gelap</Label>
@@ -149,23 +162,49 @@ const Settings = () => {
                 <form onSubmit={handleCompanyUpdate} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="company-name">Nama Perusahaan</Label>
-                    <Input id="company-name" placeholder="PT Sukses Makmur" />
+                    <Input 
+                      id="company-name" 
+                      name="company-name" 
+                      placeholder="PT Sukses Makmur" 
+                      defaultValue={companySettings?.company_name || ''}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="company-address">Alamat</Label>
-                    <Input id="company-address" placeholder="Jl. Jenderal Sudirman No. 123" />
+                    <Input 
+                      id="company-address" 
+                      name="company-address" 
+                      placeholder="Jl. Jenderal Sudirman No. 123" 
+                      defaultValue={companySettings?.company_address || ''}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="company-phone">Telepon</Label>
-                    <Input id="company-phone" placeholder="+62 21 12345678" />
+                    <Input 
+                      id="company-phone" 
+                      name="company-phone" 
+                      placeholder="+62 21 12345678" 
+                      defaultValue={companySettings?.company_phone || ''}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="company-email">Email</Label>
-                    <Input id="company-email" type="email" placeholder="info@perusahaan.com" />
+                    <Input 
+                      id="company-email" 
+                      name="company-email" 
+                      type="email" 
+                      placeholder="info@perusahaan.com" 
+                      defaultValue={companySettings?.company_email || ''}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="company-tax-id">NPWP</Label>
-                    <Input id="company-tax-id" placeholder="01.234.567.8-012.345" />
+                    <Input 
+                      id="company-tax-id" 
+                      name="company-tax-id" 
+                      placeholder="01.234.567.8-012.345" 
+                      defaultValue={companySettings?.company_tax_id || ''}
+                    />
                   </div>
                   <Button type="submit">Simpan Informasi Perusahaan</Button>
                 </form>
@@ -189,7 +228,7 @@ const Settings = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="service-type">Tipe Service</Label>
-                    <Select name="service-type" required>
+                    <Select name="service-type" defaultValue="inventory">
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih tipe service" />
                       </SelectTrigger>
@@ -205,21 +244,25 @@ const Settings = () => {
                 <Separator />
                 <div className="space-y-4">
                   <h3 className="font-medium">API Keys Aktif</h3>
-                  {apiKeys?.map((key) => (
-                    <div key={key.id} className="flex items-center justify-between p-2 border rounded">
-                      <div>
-                        <p className="font-medium">{key.key_name}</p>
-                        <p className="text-sm text-muted-foreground">{key.service_type}</p>
+                  {apiKeys && apiKeys.length > 0 ? (
+                    apiKeys.map((key) => (
+                      <div key={key.id} className="flex items-center justify-between p-2 border rounded">
+                        <div>
+                          <p className="font-medium">{key.key_name}</p>
+                          <p className="text-sm text-muted-foreground">{key.service_type}</p>
+                        </div>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => deleteApiKey(key.id)}
+                        >
+                          Hapus
+                        </Button>
                       </div>
-                      <Button 
-                        variant="destructive" 
-                        size="sm"
-                        onClick={() => deleteApiKey(key.id)}
-                      >
-                        Hapus
-                      </Button>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Belum ada API key yang dibuat</p>
+                  )}
                 </div>
               </CardContent>
             </Card>

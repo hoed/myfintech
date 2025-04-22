@@ -3,10 +3,20 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
+export interface ApiKey {
+  id: string;
+  key_name: string;
+  key_value: string;
+  service_type: string;
+  is_active: boolean | null;
+  created_at: string | null;
+  expires_at: string | null;
+}
+
 export const useApiKeys = () => {
   const queryClient = useQueryClient();
 
-  const { data: apiKeys, isLoading } = useQuery({
+  const { data: apiKeys = [], isLoading } = useQuery({
     queryKey: ['apiKeys'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -23,7 +33,7 @@ export const useApiKeys = () => {
         throw error;
       }
 
-      return data;
+      return data as ApiKey[];
     },
   });
 

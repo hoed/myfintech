@@ -3,10 +3,18 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
+export interface AppSettings {
+  auto_backup?: boolean;
+  date_format?: string;
+  dark_mode?: boolean;
+  default_currency?: string;
+  [key: string]: any;
+}
+
 export const useAppSettings = () => {
   const queryClient = useQueryClient();
 
-  const { data: settings, isLoading } = useQuery({
+  const { data: settings = {} as AppSettings, isLoading } = useQuery({
     queryKey: ['appSettings'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -24,16 +32,20 @@ export const useAppSettings = () => {
 
       return data.reduce((acc, curr) => ({
         ...acc,
-        [curr.setting_key]: JSON.parse(curr.setting_value)
-      }), {});
+        [curr.setting_key]: typeof curr.setting_value === 'string' 
+          ? JSON.parse(curr.setting_value) 
+          : curr.setting_value
+      }), {} as AppSettings);
     },
   });
 
   const updateSetting = useMutation({
     mutationFn: async ({ key, value }: { key: string, value: any }) => {
+      const stringValue = typeof value === 'object' ? JSON.stringify(value) : JSON.stringify(value);
+      
       const { error } = await supabase
         .from('app_settings')
-        .update({ setting_value: JSON.stringify(value) })
+        .update({ setting_value: stringValue })
         .eq('setting_key', key);
 
       if (error) throw error;
