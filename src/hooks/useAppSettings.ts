@@ -35,9 +35,19 @@ export const useAppSettings = () => {
         let value;
         try {
           // Try to parse the value as JSON
-          value = typeof curr.setting_value === 'string' 
-            ? JSON.parse(curr.setting_value.toString()) 
-            : curr.setting_value;
+          if (typeof curr.setting_value === 'string') {
+            // Handle boolean values stored as strings
+            if (curr.setting_value === 'true') {
+              value = true;
+            } else if (curr.setting_value === 'false') {
+              value = false;
+            } else {
+              // Try JSON parse for other values
+              value = JSON.parse(curr.setting_value);
+            }
+          } else {
+            value = curr.setting_value;
+          }
         } catch (e) {
           // If parsing fails, use the raw value
           value = curr.setting_value;

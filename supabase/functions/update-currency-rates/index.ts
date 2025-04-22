@@ -7,29 +7,53 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Mock function to simulate fetching from XE.com since direct API access requires authentication
-// In a real implementation, you would need to subscribe to XE's API service
+// Using the free API from ExchangeRate-API
 async function fetchLatestRates() {
-  // This is a mock function that returns hardcoded exchange rates
-  // In production, you would fetch from XE API with proper authentication
-  const baseRates = {
-    USD: {
-      IDR: 15600, // Example rate
-      EUR: 0.93,
-      GBP: 0.79,
-      JPY: 150.25,
-      AUD: 1.53,
-    },
-    IDR: {
-      USD: 0.000064, // Example rate (1/15600)
-      EUR: 0.000060,
-      GBP: 0.000051,
-      JPY: 0.0096,
-      AUD: 0.000098,
+  try {
+    // Free API endpoint - no API key required
+    const response = await fetch('https://open.er-api.com/v6/latest/USD');
+    
+    if (!response.ok) {
+      throw new Error(`API responded with status: ${response.status}`);
     }
-  };
-  
-  return baseRates;
+    
+    const data = await response.json();
+    console.log("API Response:", JSON.stringify(data));
+    
+    if (!data.rates) {
+      throw new Error('Invalid API response format');
+    }
+    
+    // Format the rates for our database
+    const baseRates = {
+      USD: {},
+      IDR: {}
+    };
+    
+    // USD to other currencies
+    for (const currency in data.rates) {
+      if (currency !== 'USD') {
+        baseRates.USD[currency] = data.rates[currency];
+      }
+    }
+    
+    // IDR to other currencies (using USD/IDR as base for conversion)
+    const idrRate = data.rates.IDR;
+    if (idrRate) {
+      for (const currency in data.rates) {
+        if (currency !== 'IDR') {
+          // Calculate IDR to other currency rate
+          baseRates.IDR[currency] = data.rates[currency] / idrRate;
+        }
+      }
+    }
+    
+    console.log("Formatted rates:", JSON.stringify(baseRates));
+    return baseRates;
+  } catch (error) {
+    console.error("Error fetching rates:", error);
+    throw error;
+  }
 }
 
 Deno.serve(async (req) => {
@@ -44,6 +68,7 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
     const supabase = createClient(supabaseUrl, supabaseKey);
     
+    console.log("Fetching latest rates...");
     // Fetch latest rates
     const rates = await fetchLatestRates();
     
@@ -53,6 +78,8 @@ Deno.serve(async (req) => {
     for (const fromCurrency in rates) {
       for (const toCurrency in rates[fromCurrency]) {
         const rate = rates[fromCurrency][toCurrency];
+        
+        console.log(`Processing rate: ${fromCurrency} to ${toCurrency} = ${rate}`);
         
         // Check if the rate already exists
         const { data: existingRate } = await supabase
@@ -64,6 +91,7 @@ Deno.serve(async (req) => {
         
         if (existingRate) {
           // Update existing rate
+          console.log(`Updating existing rate: ${fromCurrency} to ${toCurrency}`);
           updates.push(
             supabase
               .from('currency_rates')
@@ -75,6 +103,7 @@ Deno.serve(async (req) => {
           );
         } else {
           // Insert new rate
+          console.log(`Inserting new rate: ${fromCurrency} to ${toCurrency}`);
           updates.push(
             supabase
               .from('currency_rates')
@@ -89,6 +118,7 @@ Deno.serve(async (req) => {
     }
     
     // Execute all updates
+    console.log(`Executing ${updates.length} database updates`);
     await Promise.all(updates.map(update => update));
     
     return new Response(

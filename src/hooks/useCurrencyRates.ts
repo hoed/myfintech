@@ -14,46 +14,57 @@ export interface CurrencyRate {
 export const useCurrencyRates = () => {
   const queryClient = useQueryClient();
 
-  const { data: rates = [], isLoading } = useQuery({
+  const { data: rates = [], isLoading, error, refetch } = useQuery({
     queryKey: ['currencyRates'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('currency_rates')
-        .select('*')
-        .order('updated_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('currency_rates')
+          .select('*')
+          .order('updated_at', { ascending: false });
 
-      if (error) {
+        if (error) {
+          throw error;
+        }
+
+        return data as CurrencyRate[];
+      } catch (err: any) {
         toast({
           variant: "destructive",
           title: "Error",
           description: "Gagal memuat data kurs mata uang",
         });
-        throw error;
+        throw err;
       }
-
-      return data as CurrencyRate[];
     },
+    retry: 3, // Retry failed requests up to 3 times
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 
   const updateCurrencyRates = useMutation({
     mutationFn: async () => {
-      const response = await fetch(
-        'https://zgqzbncgcueagvqkzmtg.supabase.co/functions/v1/update-currency-rates',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabase.auth.getSession()}`
+      try {
+        const response = await fetch(
+          'https://zgqzbncgcueagvqkzmtg.supabase.co/functions/v1/update-currency-rates',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || ''}`
+            }
           }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ message: 'Network error' }));
+          throw new Error(errorData.message || `Failed to update currency rates: ${response.status}`);
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update currency rates');
+        return response.json();
+      } catch (err: any) {
+        console.error("Currency rates update error:", err);
+        throw new Error(err.message || 'Failed to update currency rates');
       }
-
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currencyRates'] });
@@ -68,12 +79,32 @@ export const useCurrencyRates = () => {
         title: "Error",
         description: error.message || "Gagal memperbarui kurs mata uang",
       });
+      // Automatically retry after 2 seconds for certain errors
+      if (error.message.includes('Network error') || error.message.includes('timeout')) {
+        setTimeout(() => {
+          toast({
+            title: "Retrying",
+            description: "Mencoba memperbarui kurs kembali...",
+          });
+          updateCurrencyRates();
+        }, 2000);
+      }
     },
+    retry: 3, // Retry failed mutations up to 3 times
   });
+
+  // Function to handle any errors and retry loading data
+  const retryLoadRates = () => {
+    if (error) {
+      refetch();
+    }
+  };
 
   return {
     rates,
     isLoading,
+    error,
+    retryLoadRates,
     updateCurrencyRates: updateCurrencyRates.mutate,
   };
 };

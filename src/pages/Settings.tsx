@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +16,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "next-themes";
 import { CurrencyRateSection } from "@/components/settings/CurrencyRateSection";
 
-// Define an interface for the backup data structure
 interface BackupData {
   timestamp: string;
   settings: Record<string, any> | null;
@@ -55,13 +53,11 @@ const Settings = () => {
   const handleAppSettingChange = (key: string, value: any) => {
     updateSetting({ key, value });
     
-    // Update theme when dark_mode setting changes
     if (key === 'dark_mode') {
       setTheme(value ? 'dark' : 'light');
     }
   };
 
-  // Ensure theme is synced with appSettings when component mounts
   React.useEffect(() => {
     if (appSettings?.dark_mode !== undefined) {
       setTheme(appSettings.dark_mode ? 'dark' : 'light');
@@ -80,18 +76,17 @@ const Settings = () => {
 
   const handleBackup = async () => {
     try {
-      // Create a safe representation of data that can be stored as JSON
-      const backupData: BackupData = {
+      const backupData = {
         timestamp: new Date().toISOString(),
-        settings: companySettings ? { ...companySettings } : null,
-        app_settings: { ...appSettings },
+        settings: companySettings ? JSON.parse(JSON.stringify(companySettings)) : null,
+        app_settings: JSON.parse(JSON.stringify(appSettings || {}))
       };
 
       const { error } = await supabase
         .from('backup_history')
         .insert({
           backup_name: `Backup_${new Date().toISOString().split('T')[0]}`,
-          backup_data: backupData as any, // Cast to any to satisfy TypeScript
+          backup_data: backupData,
         });
 
       if (error) throw error;
@@ -101,7 +96,6 @@ const Settings = () => {
         description: "Your data has been successfully backed up",
       });
       
-      // Refresh backups list
       fetchBackups();
     } catch (error: any) {
       toast({
@@ -122,10 +116,11 @@ const Settings = () => {
 
       if (error) throw error;
       
-      // Safely parse the backup data
       const parsedBackups = (data || []).map(backup => ({
         ...backup,
-        backup_data: backup.backup_data as unknown as BackupData
+        backup_data: typeof backup.backup_data === 'string'
+          ? JSON.parse(backup.backup_data)
+          : backup.backup_data
       }));
       
       setBackups(parsedBackups);
@@ -150,10 +145,10 @@ const Settings = () => {
 
       if (error) throw error;
       
-      // Cast the JSON data to our BackupData type
-      const backupData = data.backup_data as unknown as BackupData;
+      const backupData = typeof data.backup_data === 'string'
+        ? JSON.parse(data.backup_data)
+        : data.backup_data;
       
-      // Restore company settings
       if (backupData.settings && backupData.settings.id) {
         await supabase
           .from('company_settings')
@@ -167,17 +162,17 @@ const Settings = () => {
           .eq('id', backupData.settings.id);
       }
       
-      // Restore app settings
       if (backupData.app_settings) {
-        // For each setting in the backup, update the existing setting or insert a new one
         for (const [key, value] of Object.entries(backupData.app_settings)) {
+          if (value === undefined) continue;
+          
           const { data: existingSetting } = await supabase
             .from('app_settings')
             .select('id')
             .eq('setting_key', key)
             .maybeSingle();
             
-          const stringValue = typeof value === 'object' ? JSON.stringify(value) : value?.toString() || '';
+          const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
           
           if (existingSetting) {
             await supabase
@@ -197,7 +192,6 @@ const Settings = () => {
         description: "Your data has been successfully restored",
       });
       
-      // Refresh data
       window.location.reload();
     } catch (error: any) {
       toast({
@@ -208,7 +202,6 @@ const Settings = () => {
     }
   };
 
-  // Fetch backups when component mounts
   React.useEffect(() => {
     fetchBackups();
   }, []);

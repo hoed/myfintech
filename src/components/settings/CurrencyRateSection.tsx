@@ -4,9 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { useCurrencyRates } from "@/hooks/useCurrencyRates";
 import { format } from "date-fns";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const CurrencyRateSection = () => {
-  const { rates, isLoading, updateCurrencyRates } = useCurrencyRates();
+  const { rates, isLoading, error, retryLoadRates, updateCurrencyRates } = useCurrencyRates();
   
   return (
     <Card>
@@ -28,11 +30,34 @@ export const CurrencyRateSection = () => {
             onClick={() => updateCurrencyRates()}
             disabled={isLoading}
           >
-            Perbarui Kurs Sekarang
+            {isLoading ? (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                Memproses...
+              </>
+            ) : (
+              'Perbarui Kurs Sekarang'
+            )}
           </Button>
         </div>
         
-        {isLoading ? (
+        {error ? (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              Gagal memuat data kurs mata uang
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="ml-2"
+                onClick={retryLoadRates}
+              >
+                Coba Lagi
+              </Button>
+            </AlertDescription>
+          </Alert>
+        ) : isLoading ? (
           <p className="text-sm text-muted-foreground">Memuat data kurs...</p>
         ) : rates.length > 0 ? (
           <div className="border rounded-md overflow-hidden">
