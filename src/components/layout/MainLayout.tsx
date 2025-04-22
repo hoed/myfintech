@@ -1,7 +1,7 @@
-
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import MobileSidebar from "./MobileSidebar";
+import Header from "./Header";
 import Footer from "./Footer";
 import { Toaster } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -46,13 +46,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="flex h-screen bg-gray-50">
       {!isMobile && <Sidebar />}
-      <div className="flex-1 overflow-auto flex flex-col md:ml-64"> {/* Add ml-64 for sidebar width */}
-        <header className="border-b bg-white p-4 flex items-center md:hidden">
-          <MobileSidebar />
-          <div className="ml-3">
-            <h1 className="text-lg font-medium">Keuangan Mandiri</h1>
-          </div>
-        </header>
+      <div className="flex-1 overflow-auto flex flex-col md:ml-64">
+        <Header />
         <main className="p-4 md:p-6 flex-1">
           {children}
         </main>

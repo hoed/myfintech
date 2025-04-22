@@ -87,6 +87,30 @@ export type Database = {
         }
         Relationships: []
       }
+      currency_rates: {
+        Row: {
+          currency_from: string
+          currency_to: string
+          id: string
+          rate: number
+          updated_at: string | null
+        }
+        Insert: {
+          currency_from: string
+          currency_to: string
+          id?: string
+          rate: number
+          updated_at?: string | null
+        }
+        Update: {
+          currency_from?: string
+          currency_to?: string
+          id?: string
+          rate?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       debts_receivables: {
         Row: {
           amount: number
