@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,9 +18,10 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import InitializeAdmin from "./pages/InitializeAdmin";
 import Inventory from "./pages/Inventory";
+import Customers from "./pages/Customers";
+import Suppliers from "./pages/Suppliers";
 import { Analytics } from "@vercel/analytics/react"
 
-// Create the query client outside of the component
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -45,6 +45,8 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/init-admin" element={<InitializeAdmin />} />
           <Route path="/inventory" element={<Inventory />} />
+          <Route path="/pelanggan" element={<Customers />} />
+          <Route path="/pemasok" element={<Suppliers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

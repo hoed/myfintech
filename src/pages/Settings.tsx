@@ -15,6 +15,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "next-themes";
 import { CurrencyRateSection } from "@/components/settings/CurrencyRateSection";
+import { RestoreFromFile } from "@/components/settings/RestoreFromFile";
 
 interface BackupData {
   timestamp: string;
@@ -454,6 +455,8 @@ const Settings = () => {
                 </div>
               </CardContent>
             </Card>
+            
+            <RestoreFromFile />
           </TabsContent>
         </Tabs>
       </div>
