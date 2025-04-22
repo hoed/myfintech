@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Home,
@@ -42,7 +43,7 @@ const Sidebar = () => {
     },
     {
       title: "Bagan Akun",
-      href: "/bagan-akun",
+      href: "/akun",
       icon: BookOpenCheck,
       isSeparator: false,
     },

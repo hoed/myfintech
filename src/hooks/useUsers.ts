@@ -10,8 +10,6 @@ export const useUsers = () => {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      // Instead of using admin.listUsers which requires special privileges,
-      // we'll get users from a regular table
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -31,7 +29,7 @@ export const useUsers = () => {
   });
 
   const addUser = useMutation({
-    mutationFn: async (newUser: { email: string, password: string, name: string, role: string }) => {
+    mutationFn: async (newUser: { email: string, password: string, name: string, role: 'admin' | 'manager' | 'user' }) => {
       // Create a new user in the users table
       const { data, error } = await supabase
         .from('users')

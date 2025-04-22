@@ -59,8 +59,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {!isMobile && <Sidebar collapsed={sidebarCollapsed} onCollapsedChange={toggleSidebar} />}
-      <div className={`flex-1 overflow-auto flex flex-col ${!isMobile ? (sidebarCollapsed ? 'md:ml-16' : 'md:ml-64') : ''} transition-all duration-300`}>
+      {!isMobile && <Sidebar />}
+      <div className={`flex-1 overflow-auto flex flex-col`}>
         <Header />
         <main className="p-4 md:p-6 flex-1">
           {children}

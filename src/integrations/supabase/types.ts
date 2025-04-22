@@ -472,6 +472,39 @@ export type Database = {
           },
         ]
       }
+      users: {
+        Row: {
+          avatar: string | null
+          created_at: string | null
+          email: string
+          id: string
+          is_active: boolean | null
+          name: string
+          role: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          role?: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          role?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
