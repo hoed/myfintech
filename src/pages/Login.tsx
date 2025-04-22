@@ -59,10 +59,10 @@ const Login = () => {
               className="mx-auto h-12 w-auto text-primary"
             />
             <h2 className="mt-6 text-3xl font-bold text-gray-900">
-              Selamat Datang di Sistem Kami
+              Selamat Datang di MyFinTech System
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Silakan masuk untuk mengakses fitur dan layanan kami.
+              Sistem Akuntansi Keuangan Lengkap untuk Bisnis Anda.
             </p>
           </div>
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -156,7 +156,9 @@ const Login = () => {
           </form>
         </div>
       </div>
-      <Footer /> {/* Footer remains at the bottom */}
+      <footer className="text-center text-sm text-gray-500 mt-8">
+        © 2025 MyFinTech. Semua Hak Dilindungi.
+      </footer>
     </div>
   );
 };
