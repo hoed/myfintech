@@ -20,7 +20,7 @@ const Footer: React.FC<FooterProps> = ({
       className
     )}>
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
-        <p>© {currentYear} Keuangan Mandiri. All rights reserved.</p>
+        <p>© {currentYear} Hoed - MyFinTech. All rights reserved.</p>
         <div className="flex items-center space-x-4 mt-2 md:mt-0">
           <a href="#" className="hover:underline">Terms of Service</a>
           <a href="#" className="hover:underline">Privacy Policy</a>
