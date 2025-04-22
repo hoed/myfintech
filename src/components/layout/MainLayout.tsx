@@ -3,15 +3,18 @@ import React from "react";
 import Sidebar from "./Sidebar";
 import MobileSidebar from "./MobileSidebar";
 import { Toaster } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar />
+      {!isMobile && <Sidebar />}
       <div className="flex-1 overflow-auto">
         <header className="border-b bg-white p-4 flex items-center md:hidden">
           <MobileSidebar />

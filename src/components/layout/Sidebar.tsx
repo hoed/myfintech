@@ -112,7 +112,7 @@ const Sidebar = () => {
           </div>
           <div>
             <p className="text-sm font-medium text-sidebar-foreground">Admin Sistem</p>
-            <p className="text-xs text-sidebar-foreground/70">admin@keuangan.id</p>
+            <p className="text-xs text-sidebar-foreground/70">admin@example.com</p>
           </div>
         </div>
       </div>

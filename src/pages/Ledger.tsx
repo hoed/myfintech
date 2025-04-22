@@ -136,9 +136,10 @@ const Ledger = () => {
     return true;
   });
 
-  // Calculate running balance
+  // Calculate running balance - Fixed the error by declaring ledgerEntries before using it
+  let initialBalance = 0;
   const ledgerEntries = filteredTransactions.map((transaction, index) => {
-    const previousBalance = index === 0 ? 0 : ledgerEntries[index - 1]?.runningBalance || 0;
+    const previousBalance = index === 0 ? initialBalance : ledgerEntries[index - 1]?.runningBalance || 0;
     const amount = transaction.type === "debit" ? transaction.amount : -transaction.amount;
     const runningBalance = previousBalance + amount;
 

@@ -16,6 +16,7 @@ import {
   Settings,
   DollarSign,
 } from "lucide-react";
+import { useState } from "react";
 
 interface NavItemProps {
   href: string;
@@ -44,17 +45,23 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label }) => {
 };
 
 const MobileSidebar = () => {
+  const [open, setOpen] = useState(false);
+
+  const closeSheet = () => {
+    setOpen(false);
+  };
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu />
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="p-0 bg-sidebar w-60">
+      <SheetContent side="left" className="p-0 bg-sidebar w-[280px] max-w-[80vw]" onClick={(e) => e.stopPropagation()}>
         <div className="border-b border-sidebar-border px-6 py-5">
-          <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white">
+          <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white" onClick={closeSheet}>
             <DollarSign size={24} className="text-sidebar-primary" />
             <span>Keuangan Mandiri</span>
           </Link>
@@ -122,7 +129,7 @@ const MobileSidebar = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-sidebar-foreground">Admin Sistem</p>
-              <p className="text-xs text-sidebar-foreground/70">admin@keuangan.id</p>
+              <p className="text-xs text-sidebar-foreground/70">admin@example.com</p>
             </div>
           </div>
         </div>
