@@ -112,7 +112,7 @@ const Sidebar = () => {
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground py-4 overflow-y-auto">
       <div className="px-4">
-        <h1 className="text-2xl font-bold">Keuangan Mandiri</h1>
+        <h1 className="text-2xl font-bold">MyFinTech System</h1>
         <p className="text-sm text-sidebar-foreground/70">v1.0.0</p>
       </div>
       <nav className="flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-y-auto">
