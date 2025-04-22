@@ -113,9 +113,9 @@ const Dashboard = () => {
     <MainLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Selamat Datang di Keuangan Mandiri</h1>
+          <h1 className="text-3xl font-bold">Selamat Datang di MyFinTech</h1>
           <p className="text-muted-foreground mt-1">
-            Kelola keuangan bisnis anda dengan mudah dan efisien
+            Solusi Lengkap untuk Manajemen Keuangan Bisnis Anda
           </p>
         </div>
         
