@@ -6,10 +6,10 @@ export interface Account {
   type: AccountType;
   subtype?: string;
   balance: number;
-  isActive: boolean;
+  is_active: boolean;
   description?: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export type AccountType = 'aset' | 'kewajiban' | 'ekuitas' | 'pendapatan' | 'beban';
@@ -17,28 +17,28 @@ export type AccountType = 'aset' | 'kewajiban' | 'ekuitas' | 'pendapatan' | 'beb
 export interface Transaction {
   id: string;
   date: string;
-  description: string;
+  description?: string;
   amount: number;
   type: 'debit' | 'kredit';
-  accountId: string;
-  references?: string[];
-  attachments?: string[];
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
+  account_id: string;
+  transaction_code: string;
+  invoice_number?: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface BankAccount {
   id: string;
   name: string;
-  accountNumber: string;
-  bankName: string;
+  account_number: string;
+  bank_name: string;
   balance: number;
   currency: 'IDR' | 'USD';
-  isActive: boolean;
+  is_active: boolean;
   description?: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface User {
@@ -47,21 +47,21 @@ export interface User {
   email: string;
   role: 'admin' | 'manager' | 'user';
   avatar?: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface DebtReceivable {
   id: string;
   type: 'hutang' | 'piutang';
-  entityName: string;
+  entity_name: string;
   amount: number;
-  dueDate: string;
+  due_date: string;
   status: 'belum_dibayar' | 'sebagian_dibayar' | 'lunas';
   description?: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CurrencyExchange {

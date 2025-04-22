@@ -22,9 +22,10 @@ interface NavItemProps {
   href: string;
   icon: React.ReactNode;
   label: string;
+  onClick: () => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ href, icon, label }) => {
+const NavItem: React.FC<NavItemProps> = ({ href, icon, label, onClick }) => {
   const location = useLocation();
   const isActive = location.pathname === href;
 
@@ -37,6 +38,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label }) => {
           ? "bg-sidebar-accent text-sidebar-accent-foreground"
           : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
       )}
+      onClick={onClick}
     >
       {icon}
       <span>{label}</span>
@@ -73,51 +75,61 @@ const MobileSidebar = () => {
               href="/"
               icon={<LayoutDashboard size={20} />}
               label="Dashboard"
+              onClick={closeSheet}
             />
             <NavItem
               href="/akun"
               icon={<FileText size={20} />}
               label="Bagan Akun"
+              onClick={closeSheet}
             />
             <NavItem
               href="/transaksi"
               icon={<BookOpen size={20} />}
               label="Transaksi"
+              onClick={closeSheet}
             />
             <NavItem
               href="/buku-besar"
               icon={<BookOpen size={20} />}
               label="Buku Besar"
+              onClick={closeSheet}
             />
             <NavItem
               href="/rekening-bank"
               icon={<CreditCard size={20} />}
               label="Rekening Bank"
+              onClick={closeSheet}
             />
             <NavItem
               href="/hutang-piutang"
               icon={<Calculator size={20} />}
               label="Hutang & Piutang"
+              onClick={closeSheet}
             />
             <NavItem
               href="/kalender"
               icon={<Calendar size={20} />}
               label="Kalender"
+              onClick={closeSheet}
             />
             <NavItem
               href="/laporan"
               icon={<BarChart size={20} />}
               label="Laporan"
+              onClick={closeSheet}
             />
             <NavItem
               href="/pengguna"
               icon={<Users size={20} />}
               label="Manajemen Pengguna"
+              onClick={closeSheet}
             />
             <NavItem
               href="/pengaturan"
               icon={<Settings size={20} />}
               label="Pengaturan"
+              onClick={closeSheet}
             />
           </nav>
         </div>

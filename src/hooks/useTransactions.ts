@@ -36,7 +36,7 @@ export const useTransactions = () => {
   });
 
   const addTransaction = useMutation({
-    mutationFn: async (newTransaction: Partial<Transaction>) => {
+    mutationFn: async (newTransaction: Omit<Transaction, 'id' | 'transaction_code' | 'invoice_number' | 'created_at' | 'updated_at'>) => {
       // Get transaction code and invoice number
       const { data: codeData, error: codeError } = await supabase
         .rpc('generate_transaction_code');
@@ -49,7 +49,11 @@ export const useTransactions = () => {
       const { data, error } = await supabase
         .from('transactions')
         .insert([{
-          ...newTransaction,
+          date: newTransaction.date,
+          description: newTransaction.description,
+          amount: newTransaction.amount,
+          type: newTransaction.type,
+          account_id: newTransaction.account_id,
           transaction_code: codeData,
           invoice_number: invoiceData,
           created_by: 'admin' // TODO: Replace with actual user
