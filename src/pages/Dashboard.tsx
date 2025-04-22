@@ -5,6 +5,7 @@ import DashboardCard from "@/components/dashboard/DashboardCard";
 import FinancialChart from "@/components/dashboard/FinancialChart";
 import RecentTransactions from "@/components/dashboard/RecentTransactions";
 import NewFeatureBanner from "@/components/dashboard/NewFeatureBanner";
+import QuickAccess from "@/components/dashboard/QuickAccess"; 
 import { formatRupiah } from "@/lib/formatter";
 import { CreditCard, ArrowUpDown, DollarSign, Wallet } from "lucide-react";
 
@@ -72,6 +73,9 @@ const Dashboard = () => {
           </p>
         </div>
         
+        {/* Quick Access Section */}
+        <QuickAccess />
+
         <NewFeatureBanner 
           title="Fitur Baru: Laporan Pajak PPN"
           description="Laporan pajak otomatis untuk kepatuhan perpajakan di Indonesia"
