@@ -41,7 +41,7 @@ export const useCurrencyRates = () => {
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 
-  const updateCurrencyRates = useMutation({
+  const updateCurrencyRatesMutation = useMutation({
     mutationFn: async () => {
       try {
         const response = await fetch(
@@ -86,7 +86,8 @@ export const useCurrencyRates = () => {
             title: "Retrying",
             description: "Mencoba memperbarui kurs kembali...",
           });
-          updateCurrencyRates();
+          // Use the mutate function from updateCurrencyRatesMutation
+          updateCurrencyRatesMutation.mutate();
         }, 2000);
       }
     },
@@ -105,6 +106,6 @@ export const useCurrencyRates = () => {
     isLoading,
     error,
     retryLoadRates,
-    updateCurrencyRates: updateCurrencyRates.mutate,
+    updateCurrencyRates: () => updateCurrencyRatesMutation.mutate(),
   };
 };
