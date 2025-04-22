@@ -1,4 +1,3 @@
-
 import React from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,11 +23,11 @@ const Settings = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const newSettings = {
-      company_name: String(formData.get('company-name') || ''),
-      company_address: String(formData.get('company-address') || ''),
-      company_phone: String(formData.get('company-phone') || ''),
-      company_email: String(formData.get('company-email') || ''),
-      company_tax_id: String(formData.get('company-tax-id') || ''),
+      company_name: formData.get('company-name')?.toString() || '',
+      company_address: formData.get('company-address')?.toString() || '',
+      company_phone: formData.get('company-phone')?.toString() || '',
+      company_email: formData.get('company-email')?.toString() || '',
+      company_tax_id: formData.get('company-tax-id')?.toString() || '',
     };
     updateSettings(newSettings);
   };
@@ -41,23 +40,25 @@ const Settings = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     createApiKey({
-      key_name: String(formData.get('key-name') || ''),
-      service_type: String(formData.get('service-type') || ''),
+      key_name: formData.get('key-name')?.toString() || '',
+      service_type: formData.get('service-type')?.toString() || '',
     });
     (event.target as HTMLFormElement).reset();
   };
 
   const handleBackup = async () => {
     try {
-      const { data, error } = await supabase
+      const backupData = {
+        timestamp: new Date().toISOString(),
+        settings: companySettings ? { ...companySettings } : null,
+        app_settings: appSettings ? { ...appSettings } : {}
+      };
+
+      const { error } = await supabase
         .from('backup_history')
         .insert({
           backup_name: `Backup_${new Date().toISOString()}`,
-          backup_data: {
-            timestamp: new Date().toISOString(),
-            settings: companySettings,
-            app_settings: appSettings,
-          },
+          backup_data: backupData,
         });
 
       if (error) throw error;

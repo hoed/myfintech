@@ -8,7 +8,7 @@ export interface AppSettings {
   date_format?: string;
   dark_mode?: boolean;
   default_currency?: string;
-  [key: string]: any;
+  [key: string]: any; // This allows the object to have any string as a key, making it compatible with Json
 }
 
 export const useAppSettings = () => {
@@ -30,18 +30,33 @@ export const useAppSettings = () => {
         throw error;
       }
 
-      return data.reduce((acc, curr) => ({
-        ...acc,
-        [curr.setting_key]: typeof curr.setting_value === 'string' 
-          ? JSON.parse(curr.setting_value) 
-          : curr.setting_value
-      }), {} as AppSettings);
+      // Convert the array of settings to an object
+      return data.reduce((acc, curr) => {
+        let value;
+        try {
+          // Try to parse the value as JSON
+          value = typeof curr.setting_value === 'string' 
+            ? JSON.parse(curr.setting_value.toString()) 
+            : curr.setting_value;
+        } catch (e) {
+          // If parsing fails, use the raw value
+          value = curr.setting_value;
+        }
+        
+        return {
+          ...acc,
+          [curr.setting_key]: value
+        };
+      }, {} as AppSettings);
     },
   });
 
   const updateSetting = useMutation({
     mutationFn: async ({ key, value }: { key: string, value: any }) => {
-      const stringValue = typeof value === 'object' ? JSON.stringify(value) : JSON.stringify(value);
+      // Convert value to string for storage if it's an object or boolean
+      const stringValue = typeof value === 'object' 
+        ? JSON.stringify(value) 
+        : JSON.stringify(value);
       
       const { error } = await supabase
         .from('app_settings')

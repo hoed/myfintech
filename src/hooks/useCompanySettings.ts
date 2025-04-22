@@ -14,6 +14,15 @@ export interface CompanySettings {
   updated_at: string | null;
 }
 
+// Define a type for insert operations where company_name is required
+type CompanySettingsInsert = {
+  company_name: string;
+  company_address?: string | null;
+  company_phone?: string | null;
+  company_email?: string | null;
+  company_tax_id?: string | null;
+};
+
 export const useCompanySettings = () => {
   const queryClient = useQueryClient();
 
@@ -41,9 +50,14 @@ export const useCompanySettings = () => {
   const updateSettings = useMutation({
     mutationFn: async (newSettings: Partial<CompanySettings>) => {
       if (!settings?.id) {
+        // For new inserts, ensure company_name is provided
+        if (!newSettings.company_name) {
+          throw new Error("Company name is required");
+        }
+        
         const { error } = await supabase
           .from('company_settings')
-          .insert(newSettings);
+          .insert(newSettings as CompanySettingsInsert);
         
         if (error) throw error;
       } else {
