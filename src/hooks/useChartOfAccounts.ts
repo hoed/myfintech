@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -7,7 +6,7 @@ import { Account, AccountType } from "@/types";
 export const useChartOfAccounts = () => {
   const queryClient = useQueryClient();
 
-  const { data: accounts = [], isLoading } = useQuery({
+  const { data: accounts = [], isLoading } = useQuery<Account[]>({
     queryKey: ['chartOfAccounts'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -105,7 +104,7 @@ export const useChartOfAccounts = () => {
       if (checkError) throw checkError;
 
       if (transactions && transactions.length > 0) {
-        throw new Error('Akun sedang digunakan dalam transaksi');
+        throw new Error('Akun sedang digunakan dalam transaksi. Tidak dapat dihapus.');
       }
 
       const { error } = await supabase
@@ -141,7 +140,7 @@ export const useChartOfAccounts = () => {
   };
 
   // Get all available account types
-  const getAccountTypes = () => {
+  const getAccountTypes = (): AccountType[] => {
     const types = new Set<AccountType>();
     accounts.forEach(account => {
       types.add(account.type);
