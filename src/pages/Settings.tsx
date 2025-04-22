@@ -15,12 +15,27 @@ import { useApiKeys } from "@/hooks/useApiKeys";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "next-themes";
+import { CurrencyRateSection } from "@/components/settings/CurrencyRateSection";
+
+// Define an interface for the backup data structure
+interface BackupData {
+  timestamp: string;
+  settings: Record<string, any> | null;
+  app_settings: Record<string, any>;
+}
+
+interface BackupRecord {
+  id: string;
+  backup_name: string;
+  backup_data: BackupData;
+  backup_date: string;
+}
 
 const Settings = () => {
   const { settings: companySettings, updateSettings, isLoading: companyLoading } = useCompanySettings();
   const { settings: appSettings, updateSetting, isLoading: appLoading } = useAppSettings();
   const { apiKeys, createApiKey, deleteApiKey, isLoading: apiKeysLoading } = useApiKeys();
-  const [backups, setBackups] = useState<any[]>([]);
+  const [backups, setBackups] = useState<BackupRecord[]>([]);
   const [loadingBackups, setLoadingBackups] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -65,17 +80,18 @@ const Settings = () => {
 
   const handleBackup = async () => {
     try {
-      const backupData = {
+      // Create a safe representation of data that can be stored as JSON
+      const backupData: BackupData = {
         timestamp: new Date().toISOString(),
-        settings: companySettings || null,
-        app_settings: appSettings || {}
+        settings: companySettings ? { ...companySettings } : null,
+        app_settings: { ...appSettings },
       };
 
       const { error } = await supabase
         .from('backup_history')
         .insert({
           backup_name: `Backup_${new Date().toISOString().split('T')[0]}`,
-          backup_data: backupData,
+          backup_data: backupData as any, // Cast to any to satisfy TypeScript
         });
 
       if (error) throw error;
@@ -105,7 +121,14 @@ const Settings = () => {
         .order('backup_date', { ascending: false });
 
       if (error) throw error;
-      setBackups(data || []);
+      
+      // Safely parse the backup data
+      const parsedBackups = (data || []).map(backup => ({
+        ...backup,
+        backup_data: backup.backup_data as unknown as BackupData
+      }));
+      
+      setBackups(parsedBackups);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -127,7 +150,8 @@ const Settings = () => {
 
       if (error) throw error;
       
-      const backupData = data.backup_data;
+      // Cast the JSON data to our BackupData type
+      const backupData = data.backup_data as unknown as BackupData;
       
       // Restore company settings
       if (backupData.settings && backupData.settings.id) {
@@ -213,6 +237,7 @@ const Settings = () => {
           <TabsList>
             <TabsTrigger value="general">Umum</TabsTrigger>
             <TabsTrigger value="company">Informasi Perusahaan</TabsTrigger>
+            <TabsTrigger value="currency">Kurs Mata Uang</TabsTrigger>
             <TabsTrigger value="api-keys">API Keys</TabsTrigger>
             <TabsTrigger value="backup">Backup & Restore</TabsTrigger>
           </TabsList>
@@ -324,6 +349,10 @@ const Settings = () => {
                 </form>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="currency" className="space-y-4">
+            <CurrencyRateSection />
           </TabsContent>
           
           <TabsContent value="api-keys" className="space-y-4">
