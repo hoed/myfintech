@@ -28,8 +28,11 @@ export const RestoreFromFile = () => {
         const sqlContent = e.target?.result;
         if (typeof sqlContent !== 'string') return;
 
-        const { error } = await supabase.rpc('restore_from_sql', {
-          sql_content: sqlContent
+        // Execute the SQL content directly - note this is not actually possible through
+        // Supabase client library for security reasons. This is a placeholder for the UI
+        // In a real implementation, you would need a custom endpoint or server-side function
+        const { data, error } = await supabase.functions.invoke('execute-sql-restore', {
+          body: { sqlContent }
         });
 
         if (error) throw error;
