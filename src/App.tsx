@@ -15,7 +15,11 @@ import BankAccounts from "./pages/BankAccounts";
 import DebtReceivables from "./pages/DebtReceivables";
 import Calendar from "./pages/Calendar";
 import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import InitializeAdmin from "./pages/InitializeAdmin";
 
+// Create the query client outside of the component
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,7 +39,9 @@ const App = () => (
           <Route path="/laporan" element={<Reports />} />
           <Route path="/pengguna" element={<UserManagement />} />
           <Route path="/pengaturan" element={<Settings />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/profil" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/init-admin" element={<InitializeAdmin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

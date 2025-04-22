@@ -3,152 +3,160 @@ import React from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 
 const Settings = () => {
   return (
     <MainLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Pengaturan</h1>
+          <h1 className="text-3xl font-bold">Pengaturan Sistem</h1>
           <p className="text-muted-foreground mt-1">
-            Konfigurasi aplikasi keuangan
+            Kelola konfigurasi dan preferensi sistem keuangan
           </p>
         </div>
 
-        <Tabs defaultValue="umum" className="w-full">
-          <TabsList className="mb-4">
-            <TabsTrigger value="umum">Umum</TabsTrigger>
-            <TabsTrigger value="perusahaan">Perusahaan</TabsTrigger>
-            <TabsTrigger value="notifikasi">Notifikasi</TabsTrigger>
+        <Tabs defaultValue="general" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="general">Umum</TabsTrigger>
+            <TabsTrigger value="company">Informasi Perusahaan</TabsTrigger>
+            <TabsTrigger value="currency">Mata Uang</TabsTrigger>
+            <TabsTrigger value="backup">Backup & Restore</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="umum">
+          <TabsContent value="general" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle>Pengaturan Umum</CardTitle>
                 <CardDescription>
-                  Konfigurasi dasar aplikasi
+                  Konfigurasi umum untuk sistem keuangan
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="currency">Mata Uang Utama</Label>
-                    <Input id="currency" value="IDR - Indonesian Rupiah" readOnly />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="dateFormat">Format Tanggal</Label>
-                    <Input id="dateFormat" value="DD/MM/YYYY" readOnly />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="fiscalYear">Tahun Fiskal</Label>
-                    <Input id="fiscalYear" value="Januari - Desember" readOnly />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label htmlFor="darkMode">Mode Gelap</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Aktifkan tampilan gelap
-                      </p>
-                    </div>
-                    <Switch id="darkMode" />
-                  </div>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Switch id="auto-backup" />
+                  <Label htmlFor="auto-backup">Backup Otomatis</Label>
                 </div>
-                <Button>Simpan Perubahan</Button>
+                <Separator />
+                <div className="space-y-2">
+                  <Label htmlFor="date-format">Format Tanggal</Label>
+                  <Select defaultValue="dd-MM-yyyy">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih format tanggal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="dd-MM-yyyy">DD-MM-YYYY</SelectItem>
+                      <SelectItem value="MM-dd-yyyy">MM-DD-YYYY</SelectItem>
+                      <SelectItem value="yyyy-MM-dd">YYYY-MM-DD</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Separator />
+                <div className="flex items-center space-x-2">
+                  <Switch id="dark-mode" />
+                  <Label htmlFor="dark-mode">Mode Gelap</Label>
+                </div>
+                <Button>Simpan Pengaturan</Button>
               </CardContent>
             </Card>
           </TabsContent>
           
-          <TabsContent value="perusahaan">
+          <TabsContent value="company" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle>Informasi Perusahaan</CardTitle>
                 <CardDescription>
-                  Detail perusahaan untuk laporan dan dokumen
+                  Detail perusahaan untuk dokumen dan laporan
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="companyName">Nama Perusahaan</Label>
-                    <Input id="companyName" placeholder="PT Maju Jaya" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Alamat</Label>
-                    <Input id="address" placeholder="Jl. Sudirman No. 123, Jakarta" />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Telepon</Label>
-                      <Input id="phone" placeholder="021-12345678" />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="info@example.com" />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="taxId">NPWP</Label>
-                    <Input id="taxId" placeholder="12.345.678.9-123.000" />
-                  </div>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="company-name">Nama Perusahaan</Label>
+                  <Input id="company-name" placeholder="PT Sukses Makmur" />
                 </div>
-                <Button>Simpan Perubahan</Button>
+                <div className="space-y-2">
+                  <Label htmlFor="company-address">Alamat</Label>
+                  <Input id="company-address" placeholder="Jl. Jenderal Sudirman No. 123" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="company-phone">Telepon</Label>
+                  <Input id="company-phone" placeholder="+62 21 12345678" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="company-email">Email</Label>
+                  <Input id="company-email" type="email" placeholder="info@perusahaan.com" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="company-tax-id">NPWP</Label>
+                  <Input id="company-tax-id" placeholder="01.234.567.8-012.345" />
+                </div>
+                <Button>Simpan Informasi Perusahaan</Button>
               </CardContent>
             </Card>
           </TabsContent>
           
-          <TabsContent value="notifikasi">
+          <TabsContent value="currency" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Pengaturan Notifikasi</CardTitle>
+                <CardTitle>Pengaturan Mata Uang</CardTitle>
                 <CardDescription>
-                  Atur notifikasi dan pengingat
+                  Konfigurasi mata uang dan kurs tukar
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Notifikasi Email</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Kirim notifikasi melalui email
-                      </p>
-                    </div>
-                    <Switch />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Pengingat Jatuh Tempo</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Ingatkan tentang hutang atau piutang yang akan jatuh tempo
-                      </p>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Notifikasi Transaksi</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Dapatkan notifikasi saat ada transaksi baru
-                      </p>
-                    </div>
-                    <Switch defaultChecked />
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="default-currency">Mata Uang Utama</Label>
+                  <Select defaultValue="IDR">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih mata uang utama" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="IDR">Rupiah (IDR)</SelectItem>
+                      <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Separator />
+                <div className="space-y-2">
+                  <Label htmlFor="exchange-rate">Kurs USD ke IDR</Label>
+                  <div className="flex gap-2">
+                    <Input id="exchange-rate" placeholder="15,000" />
+                    <Button variant="outline">Update Kurs</Button>
                   </div>
                 </div>
-                <Button>Simpan Perubahan</Button>
+                <Button>Simpan Pengaturan Mata Uang</Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="backup" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Backup & Restore</CardTitle>
+                <CardDescription>
+                  Kelola backup dan restore data sistem
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Backup Manual</Label>
+                  <div className="flex gap-2">
+                    <Button variant="outline">Backup Data Sekarang</Button>
+                  </div>
+                </div>
+                <Separator />
+                <div className="space-y-2">
+                  <Label>Restore dari Backup</Label>
+                  <div className="flex gap-2">
+                    <Input id="restore-file" type="file" />
+                    <Button variant="outline">Restore</Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

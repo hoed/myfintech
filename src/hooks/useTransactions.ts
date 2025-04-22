@@ -36,7 +36,13 @@ export const useTransactions = () => {
   });
 
   const addTransaction = useMutation({
-    mutationFn: async (newTransaction: Omit<Transaction, 'id' | 'transaction_code' | 'invoice_number' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (newTransaction: {
+      date: string;
+      description?: string;
+      amount: number;
+      type: "debit" | "kredit";
+      account_id: string;
+    }) => {
       // Get transaction code and invoice number
       const { data: codeData, error: codeError } = await supabase
         .rpc('generate_transaction_code');

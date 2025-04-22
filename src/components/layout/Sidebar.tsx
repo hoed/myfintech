@@ -12,7 +12,13 @@ import {
   Users,
   Settings,
   DollarSign,
+  User,
+  LogOut,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface NavItemProps {
   href: string;
@@ -41,6 +47,25 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label }) => {
 };
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Berhasil Logout",
+        description: "Anda telah keluar dari sistem.",
+      });
+      navigate("/login");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Gagal Logout",
+        description: error.message || "Terjadi kesalahan saat logout",
+      });
+    }
+  };
+
   return (
     <aside className="hidden md:flex h-screen w-64 flex-col bg-sidebar fixed inset-y-0 z-50">
       <div className="border-b border-sidebar-border px-6 py-5">
@@ -110,10 +135,30 @@ const Sidebar = () => {
           <div className="h-9 w-9 rounded-full bg-sidebar-primary flex items-center justify-center text-white">
             AD
           </div>
-          <div>
-            <p className="text-sm font-medium text-sidebar-foreground">Admin Sistem</p>
-            <p className="text-xs text-sidebar-foreground/70">admin@example.com</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-sidebar-foreground truncate">Admin Sistem</p>
+            <p className="text-xs text-sidebar-foreground/70 truncate">admin@example.com</p>
           </div>
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-start text-sidebar-foreground"
+            onClick={() => navigate("/profil")}
+          >
+            <User size={16} className="mr-2" />
+            Profil
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-start text-sidebar-foreground"
+            onClick={handleLogout}
+          >
+            <LogOut size={16} className="mr-2" />
+            Logout
+          </Button>
         </div>
       </div>
     </aside>
