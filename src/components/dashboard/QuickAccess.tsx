@@ -36,7 +36,7 @@ const QuickAccess: React.FC = () => {
         <Button 
           variant="outline" 
           className="flex flex-col items-center justify-center h-24 gap-2"
-          onClick={() => navigateTo("/rekening-bank")}
+          onClick={() => navigateTo("/rekening")}
         >
           <BanknoteIcon className="h-6 w-6" />
           <span className="text-xs">Rekening Bank</span>
@@ -63,7 +63,7 @@ const QuickAccess: React.FC = () => {
         <Button 
           variant="outline" 
           className="flex flex-col items-center justify-center h-24 gap-2"
-          onClick={() => navigateTo("/inventory")}
+          onClick={() => navigateTo("/inventaris")}
         >
           <ChartBar className="h-6 w-6" />
           <span className="text-xs">Inventaris</span>
