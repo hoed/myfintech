@@ -109,26 +109,26 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground py-4 overflow-hidden"> {/* Removed overflow-y-auto */}
+    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground py-4">
       <div className="px-4">
-        <h1 className="text-xl md:text-2xl font-bold">MyFinTech System</h1> {/* Responsive font size */}
-        <p className="text-xs md:text-sm text-sidebar-foreground/70">v1.0.0</p> {/* Responsive font size */}
+        <h1 className="text-xl md:text-2xl font-bold">MyFinTech System</h1>
+        <p className="text-xs md:text-sm text-sidebar-foreground/70">v1.0.0</p>
       </div>
-      <nav className="flex flex-col flex-1 px-2 mt-4 space-y-1"> {/* Removed overflow-y-auto */}
+      <nav className="flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-y-auto"> {/* Added overflow-y-auto here */}
         {navigationItems.map((item) => (
           <NavLink
             key={item.href}
             to={item.href}
             className={({ isActive }) =>
               cn(
-                "flex items-center px-3 py-2 text-sm md:text-base font-medium rounded-md transition-colors", /* Responsive font size */
+                "flex items-center px-3 py-2 text-sm md:text-base font-medium rounded-md transition-colors",
                 isActive
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
               )
             }
           >
-            <item.icon className="w-3 h-3 mr-2 md:w-4 md:h-4" /> {/* Responsive icon size */}
+            <item.icon className="w-3 h-3 mr-2 md:w-4 md:h-4" />
             {item.title}
           </NavLink>
         ))}
