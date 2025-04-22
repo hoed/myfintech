@@ -1,65 +1,36 @@
+
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { formatDate } from "@/lib/formatter";
 import { User } from "@/types";
-import { Plus, Search, Trash, Edit, UserCog } from "lucide-react";
+import { Plus, Search, Trash, Edit, UserCog, Eye, EyeOff } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { useUsers } from "@/hooks/useUsers";
+import { toast } from "@/hooks/use-toast";
 
 const UserManagement = () => {
-  // Sample data
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: "1",
-      name: "Ahmad Fauzi",
-      email: "ahmad.fauzi@keuangan.id",
-      role: "admin",
-      is_active: true,
-      created_at: "2023-01-01",
-      updated_at: "2023-04-20",
-    },
-    {
-      id: "2",
-      name: "Budi Santoso",
-      email: "budi.santoso@keuangan.id",
-      role: "manager",
-      is_active: true,
-      created_at: "2023-01-15",
-      updated_at: "2023-04-19",
-    },
-    {
-      id: "3",
-      name: "Citra Dewi",
-      email: "citra.dewi@keuangan.id",
-      role: "user",
-      is_active: true,
-      created_at: "2023-02-01",
-      updated_at: "2023-04-18",
-    },
-    {
-      id: "4",
-      name: "Deni Pratama",
-      email: "deni.pratama@keuangan.id",
-      role: "user",
-      is_active: false,
-      created_at: "2023-02-15",
-      updated_at: "2023-04-17",
-    },
-  ]);
+  const { users, isLoading, addUser, toggleUserStatus } = useUsers();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState<string>("semua");
   const [isNewUserOpen, setIsNewUserOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
+    password: "",
     role: "user" as "admin" | "manager" | "user",
   });
 
@@ -70,31 +41,49 @@ const UserManagement = () => {
   };
 
   const handleAddUser = () => {
-    const user: User = {
-      id: (users.length + 1).toString(),
-      name: newUser.name,
-      email: newUser.email,
-      role: newUser.role,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+    if (!newUser.name || !newUser.email || !newUser.password) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Semua field harus diisi",
+      });
+      return;
+    }
 
-    setUsers([...users, user]);
-    setIsNewUserOpen(false);
-    setNewUser({
-      name: "",
-      email: "",
-      role: "user",
+    addUser.mutate(newUser, {
+      onSuccess: () => {
+        setIsNewUserOpen(false);
+        setNewUser({
+          name: "",
+          email: "",
+          password: "",
+          role: "user",
+        });
+      }
     });
   };
 
-  const toggleUserStatus = (userId: string) => {
-    setUsers(
-      users.map((user) =>
-        user.id === userId ? { ...user, is_active: !user.is_active, updated_at: new Date().toISOString() } : user
-      )
-    );
+  const handleToggleUserStatus = (userId: string, isActive: boolean) => {
+    toggleUserStatus.mutate({
+      userId,
+      isActive: !isActive
+    });
+  };
+
+  const confirmDeleteUser = (userId: string) => {
+    setSelectedUserId(userId);
+    setIsDeleteOpen(true);
+  };
+
+  const handleDeleteUser = () => {
+    if (selectedUserId) {
+      const user = users.find(u => u.id === selectedUserId);
+      if (user) {
+        handleToggleUserStatus(selectedUserId, user.is_active);
+        setIsDeleteOpen(false);
+        setSelectedUserId(null);
+      }
+    }
   };
 
   const filteredUsers = users.filter((user) => {
@@ -160,6 +149,27 @@ const UserManagement = () => {
                   />
                 </div>
                 <div className="grid gap-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={newUser.password}
+                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                      placeholder="Password"
+                    />
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute right-0 top-0"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </Button>
+                  </div>
+                </div>
+                <div className="grid gap-2">
                   <Label htmlFor="role">Peran</Label>
                   <Select
                     value={newUser.role}
@@ -175,7 +185,11 @@ const UserManagement = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button onClick={handleAddUser} className="mt-2">Simpan</Button>
+                <DialogFooter className="mt-2">
+                  <Button onClick={handleAddUser} disabled={addUser.isPending}>
+                    {addUser.isPending ? "Menyimpan..." : "Simpan"}
+                  </Button>
+                </DialogFooter>
               </div>
             </DialogContent>
           </Dialog>
@@ -217,7 +231,13 @@ const UserManagement = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.length === 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center h-24">
+                    Memuat data pengguna...
+                  </TableCell>
+                </TableRow>
+              ) : filteredUsers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center h-24">
                     Tidak ada pengguna yang ditemukan
@@ -229,6 +249,9 @@ const UserManagement = () => {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar>
+                          {user.avatar ? (
+                            <AvatarImage src={user.avatar} alt={user.name} />
+                          ) : null}
                           <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                         </Avatar>
                         <div className="font-medium">{user.name}</div>
@@ -252,9 +275,10 @@ const UserManagement = () => {
                       <div className="flex items-center gap-2">
                         <Switch 
                           checked={user.is_active}
-                          onCheckedChange={() => toggleUserStatus(user.id)}
+                          onCheckedChange={() => handleToggleUserStatus(user.id, user.is_active)}
+                          disabled={toggleUserStatus.isPending}
                         />
-                        <span className={user.is_active ? "text-success" : "text-muted-foreground"}>
+                        <span className={user.is_active ? "text-green-600" : "text-muted-foreground"}>
                           {user.is_active ? "Aktif" : "Nonaktif"}
                         </span>
                       </div>
@@ -268,7 +292,11 @@ const UserManagement = () => {
                         <Button variant="ghost" size="icon">
                           <UserCog size={16} />
                         </Button>
-                        <Button variant="ghost" size="icon">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => confirmDeleteUser(user.id)}
+                        >
                           <Trash size={16} />
                         </Button>
                       </div>
@@ -280,6 +308,32 @@ const UserManagement = () => {
           </Table>
         </div>
       </div>
+
+      {/* Delete User Dialog */}
+      <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi</AlertDialogTitle>
+            <AlertDialogDescription>
+              {selectedUserId && users.find(u => u.id === selectedUserId)?.is_active
+                ? "Apakah Anda yakin ingin menonaktifkan pengguna ini?"
+                : "Apakah Anda yakin ingin mengaktifkan kembali pengguna ini?"}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteUser} className={
+              selectedUserId && users.find(u => u.id === selectedUserId)?.is_active
+                ? "bg-destructive text-destructive-foreground"
+                : ""
+            }>
+              {selectedUserId && users.find(u => u.id === selectedUserId)?.is_active
+                ? "Nonaktifkan"
+                : "Aktifkan"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </MainLayout>
   );
 };
