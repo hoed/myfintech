@@ -35,8 +35,11 @@ const App = () => (
           <Route path="/akun" element={<AccountChart />} />
           <Route path="/transaksi" element={<TransactionsPage />} />
           <Route path="/buku-besar" element={<Ledger />} />
-          <Route path="/rekening-bank" element={<BankAccounts />} />
+          <Route path="/rekening" element={<BankAccounts />} />
           <Route path="/hutang-piutang" element={<DebtReceivables />} />
+          <Route path="/pelanggan" element={<Customers />} />
+          <Route path="/pemasok" element={<Suppliers />} />
+          <Route path="/inventaris" element={<Inventory />} />
           <Route path="/kalender" element={<Calendar />} />
           <Route path="/laporan" element={<Reports />} />
           <Route path="/pengguna" element={<UserManagement />} />
@@ -44,9 +47,6 @@ const App = () => (
           <Route path="/profil" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/init-admin" element={<InitializeAdmin />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/pelanggan" element={<Customers />} />
-          <Route path="/pemasok" element={<Suppliers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

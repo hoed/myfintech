@@ -8,6 +8,8 @@ import { Toaster } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -44,9 +46,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   }, [navigate]);
 
   // Function to toggle sidebar state
-  const toggleSidebar = (collapsed: boolean) => {
-    setSidebarCollapsed(collapsed);
-    localStorage.setItem('sidebarCollapsed', String(collapsed));
+  const toggleSidebar = () => {
+    const newState = !sidebarCollapsed;
+    setSidebarCollapsed(newState);
+    localStorage.setItem('sidebarCollapsed', String(newState));
   };
 
   if (isLoading) {
@@ -59,14 +62,31 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {!isMobile && <Sidebar />}
-      <div className={`flex-1 overflow-auto flex flex-col`}>
+      {!isMobile && (
+        <div className={`${sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-64'} transition-all duration-300 ease-in-out h-screen`}>
+          <Sidebar />
+        </div>
+      )}
+      <div className="flex-1 overflow-auto flex flex-col">
         <Header />
-        <main className="p-4 md:p-6 flex-1">
-          {children}
-        </main>
+        <div className="flex-1 relative">
+          {!isMobile && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleSidebar}
+              className="absolute top-4 left-0 z-10 rounded-l-none rounded-r-md shadow-md bg-white"
+            >
+              {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </Button>
+          )}
+          <main className="p-4 md:p-6 flex-1">
+            {children}
+          </main>
+        </div>
         <Footer />
       </div>
+      {isMobile && <MobileSidebar />}
       <Toaster position="top-right" richColors />
     </div>
   );
