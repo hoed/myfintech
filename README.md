@@ -1,73 +1,86 @@
-# Welcome to your Lovable project
+# MyFinTech - Finance Management App for Manufacturing Businesses
 
-## Project info
+[MyFint](https://myfint.vercel.app) is a comprehensive finance management application tailored for manufacturing businesses in Indonesia. This app helps businesses manage their finances efficiently, providing tools for transaction management, debt tracking, receivables management, and financial reporting. With integration to **Supabase** for backend/database, MyFint offers real-time financial calculations and seamless user experience.
 
-**URL**: https://lovable.dev/projects/b0a2c35f-dc44-497d-b5e0-af62de8a60a2
+## Features
 
-## How can I edit this code?
+- **Chart of Accounts (COA):** Manage your accounts with unique codes and descriptions for all financial categories.
+- **Transaction Management:** Record income and expenses, link them to your accounts, and keep track of all financial activities.
+- **Debt Tracking:** Monitor outstanding debts (utang) and receivables (piutang) with payment statuses and aging reports.
+- **Bank Account Management:** Manage multiple bank accounts and track balances, deposits, and withdrawals.
+- **Auto Calculations:** Real-time computation of balances, cash flow, and taxes.
+- **Tax Reporting:** Generate tax reports such as PPN, PPh 21/23/25, and tax withholding summaries.
+- **User Management:** Manage user profiles and set up role-based access (Administrator, Management).
+- **Financial Reports:** Filter daily, weekly, and monthly reports, including income, expenses, and cash flow.
+- **Integrated Inventory System:** Connect to inventory system using API Key.
+- **Calendar View:** View all financial activities in an interactive calendar.
+- **Visual Financial Graphs:** Analyze financial performance with monthly and yearly graphs.
+- **Secure Password Management:** Ensure secure password updates and reset mechanisms.
 
-There are several ways of editing your application.
+## Technologies Used
 
-**Use Lovable**
+- **Frontend:** Vite + React (with Tailwind CSS for styling)
+- **Backend:** Supabase (PostgreSQL, Authentication, and Storage)
+- **Deployment:** Vercel
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b0a2c35f-dc44-497d-b5e0-af62de8a60a2) and start prompting.
+## Deployment
 
-Changes made via Lovable will be committed automatically to this repo.
+You can view the live version of the app at:  
+[https://myfint.vercel.app](https://myfint.vercel.app)
 
-**Use your preferred IDE**
+## Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+To run this project locally, follow the steps below:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 1. Clone the repository
 
-Follow these steps:
+```bash
+git clone https://github.com/yourusername/myfint.git
+cd myfint
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 2. Install dependencies
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```bash
+npm install
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 3. Configure environment variables
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Create a `.env` file in the root of the project and add your **Supabase** credentials. You can find them in the Supabase dashboard under your project settings.
+
+```env
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+### 4. Run the development server
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+This will start the development server. Open your browser and go to [http://localhost:3000](http://localhost:3000) to view the application.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Supabase Integration
 
-**Use GitHub Codespaces**
+This project is integrated with **Supabase**, which provides real-time database functionality, user authentication, and file storage.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Setting up Supabase:
 
-## What technologies are used for this project?
+1. Create a new project on [Supabase](https://supabase.io).
+2. Set up your database tables (Accounts, Transactions, etc.) according to the schema defined in the project.
+3. Obtain the **Supabase URL** and **anon key** from your Supabase dashboard.
+4. Add these keys to your `.env` file as mentioned in the Installation step.
 
-This project is built with:
+## Usage
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Admin Dashboard:** Provides full access to all features such as adding new accounts, creating transactions, managing users, and generating reports.
+- **Management Dashboard:** Limited access to viewing reports and monitoring financial activities.
+- **User Profile Management:** Users can update their profiles, set passwords, and manage their login credentials securely.
 
-## How can I deploy this project?
+## Contributing
 
-Simply open [Lovable](https://lovable.dev/projects/b0a2c35f-dc44-497d-b5e0-af62de8a60a2) and click on Share -> Publish.
+Contributions are welcome! If you'd like to contribute to the project, please follow these steps:
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1. Fork this repository
