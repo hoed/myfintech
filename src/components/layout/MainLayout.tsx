@@ -46,7 +46,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="flex h-screen bg-gray-50">
       {!isMobile && <Sidebar />}
-      <div className="flex-1 overflow-auto flex flex-col">
+      <div className="flex-1 overflow-auto flex flex-col md:ml-64"> {/* Add ml-64 for sidebar width */}
         <header className="border-b bg-white p-4 flex items-center md:hidden">
           <MobileSidebar />
           <div className="ml-3">

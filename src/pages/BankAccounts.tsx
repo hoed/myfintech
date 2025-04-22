@@ -35,7 +35,7 @@ const BankAccounts = () => {
     name: "",
     account_number: "",
     bank_name: "",
-    currency: "IDR",
+    currency: "IDR" as "IDR" | "USD",
     balance: 0,
     description: "",
     is_active: true
@@ -70,8 +70,8 @@ const BankAccounts = () => {
       name: formData.name,
       account_number: formData.account_number,
       bank_name: formData.bank_name,
-      currency: formData.currency as "IDR" | "USD",
-      balance: formData.balance || 0,
+      currency: formData.currency,
+      balance: formData.balance,
       description: formData.description || "",
       is_active: formData.is_active
     });

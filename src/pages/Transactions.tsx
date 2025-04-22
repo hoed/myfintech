@@ -14,7 +14,23 @@ const TransactionsPage = () => {
   const [filterType, setFilterType] = useState<string>("semua");
   const [isNewTransactionOpen, setIsNewTransactionOpen] = useState(false);
 
-  const filteredTransactions = transactions.filter((transaction) => {
+  // Cast transactions to the correct type to ensure 'type' is properly typed
+  const typedTransactions = transactions as unknown as {
+    id: string;
+    date: string;
+    description?: string;
+    amount: number;
+    type: 'debit' | 'kredit';
+    account_id: string;
+    transaction_code: string;
+    invoice_number?: string;
+    created_by: string;
+    created_at: string;
+    updated_at: string;
+    chart_of_accounts?: any;
+  }[];
+
+  const filteredTransactions = typedTransactions.filter((transaction) => {
     const matchesSearch =
       transaction.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
 
