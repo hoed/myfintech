@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -64,14 +65,15 @@ const BankAccounts = () => {
       return;
     }
 
+    // Make sure all required fields are defined
     addBankAccount.mutate({
       name: formData.name,
       account_number: formData.account_number,
       bank_name: formData.bank_name,
       currency: formData.currency as "IDR" | "USD",
       balance: formData.balance || 0,
-      description: formData.description,
-      is_active: true
+      description: formData.description || "",
+      is_active: formData.is_active
     });
 
     setFormData({

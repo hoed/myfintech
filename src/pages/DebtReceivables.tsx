@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/hooks/use-toast";
 
 const debtReceivableSchema = z.object({
   type: z.enum(["hutang", "piutang"]),
@@ -34,12 +36,12 @@ const DebtReceivables = () => {
   const { debtReceivables, isLoading, addDebtReceivable } = useDebtReceivables();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"semua" | "hutang" | "piutang">("semua");
-  const [formData, setFormData] = useState<z.infer<typeof debtReceivableSchema>>({
-    type: "hutang",
+  const [formData, setFormData] = useState({
+    type: "hutang" as "hutang" | "piutang",
     entity_name: "",
     amount: 0,
-    due_date: "",
-    status: "belum_dibayar",
+    due_date: new Date(),
+    status: "belum_dibayar" as "belum_dibayar" | "sebagian_dibayar" | "lunas",
     description: ""
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -80,12 +82,12 @@ const DebtReceivables = () => {
     }
 
     addDebtReceivable.mutate({
-      type: formData.type || "hutang",
+      type: formData.type,
       entity_name: formData.entity_name,
       amount: formData.amount,
-      due_date: formData.due_date,
-      status: formData.status || "belum_dibayar",
-      description: formData.description
+      due_date: format(formData.due_date, "yyyy-MM-dd"),
+      status: formData.status,
+      description: formData.description || ""
     });
 
     // Reset form
@@ -93,7 +95,7 @@ const DebtReceivables = () => {
       type: "hutang",
       entity_name: "",
       amount: 0,
-      due_date: "",
+      due_date: new Date(),
       status: "belum_dibayar",
       description: ""
     });
