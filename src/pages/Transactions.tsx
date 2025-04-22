@@ -1,6 +1,7 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
+import { useTransactions } from "@/hooks/useTransactions";
+import { useAccounts } from "@/hooks/useAccounts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,8 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatRupiah, formatDate } from "@/lib/formatter";
-import { Account, Transaction } from "@/types";
-import { Calendar, Eye, FileText, Plus, Search, Filter, Download, Upload } from "lucide-react";
+import { Calendar, Eye, FileText, Plus, Search, Filter, Download } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CalendarIcon } from "lucide-react";
@@ -19,137 +19,8 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
 const TransactionsPage = () => {
-  // Sample data
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: "1",
-      date: "2023-04-20",
-      description: "Pembayaran dari PT Maju Bersama",
-      amount: 25000000,
-      type: "kredit",
-      accountId: "3",
-      createdBy: "admin",
-      createdAt: "2023-04-20T10:30:00",
-      updatedAt: "2023-04-20T10:30:00",
-    },
-    {
-      id: "2",
-      date: "2023-04-19",
-      description: "Pembayaran listrik bulan April",
-      amount: 3500000,
-      type: "debit",
-      accountId: "7",
-      createdBy: "admin",
-      createdAt: "2023-04-19T14:15:00",
-      updatedAt: "2023-04-19T14:15:00",
-    },
-    {
-      id: "3",
-      date: "2023-04-18",
-      description: "Pembelian bahan baku",
-      amount: 12000000,
-      type: "debit",
-      accountId: "4",
-      createdBy: "manager",
-      createdAt: "2023-04-18T09:45:00",
-      updatedAt: "2023-04-18T09:45:00",
-    },
-    {
-      id: "4",
-      date: "2023-04-17",
-      description: "Pembayaran dari PT Sukses Mandiri",
-      amount: 18000000,
-      type: "kredit",
-      accountId: "3",
-      createdBy: "admin",
-      createdAt: "2023-04-17T16:20:00",
-      updatedAt: "2023-04-17T16:20:00",
-    },
-    {
-      id: "5",
-      date: "2023-04-16",
-      description: "Pembayaran gaji karyawan",
-      amount: 45000000,
-      type: "debit",
-      accountId: "7",
-      createdBy: "admin",
-      createdAt: "2023-04-16T11:00:00",
-      updatedAt: "2023-04-16T11:00:00",
-    },
-  ]);
-
-  const accounts: Account[] = [
-    {
-      id: "1",
-      code: "1-1000",
-      name: "Kas",
-      type: "aset",
-      balance: 250000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-20",
-    },
-    {
-      id: "2",
-      code: "1-2000",
-      name: "Bank BCA",
-      type: "aset",
-      balance: 450000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-19",
-    },
-    {
-      id: "3",
-      code: "1-3000",
-      name: "Piutang Dagang",
-      type: "aset",
-      balance: 320000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-18",
-    },
-    {
-      id: "4",
-      code: "2-1000",
-      name: "Hutang Dagang",
-      type: "kewajiban",
-      balance: 180000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-17",
-    },
-    {
-      id: "5",
-      code: "3-1000",
-      name: "Modal Disetor",
-      type: "ekuitas",
-      balance: 500000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-01-01",
-    },
-    {
-      id: "6",
-      code: "4-1000",
-      name: "Pendapatan Penjualan",
-      type: "pendapatan",
-      balance: 750000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-20",
-    },
-    {
-      id: "7",
-      code: "5-1000",
-      name: "Beban Gaji",
-      type: "beban",
-      balance: 280000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-16",
-    },
-  ];
+  const { transactions, isLoading, addTransaction } = useTransactions();
+  const { accounts } = useAccounts();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("semua");
@@ -167,19 +38,14 @@ const TransactionsPage = () => {
       return;
     }
 
-    const transaction: Transaction = {
-      id: (transactions.length + 1).toString(),
+    addTransaction.mutate({
       date: selectedDate.toISOString().split('T')[0],
       description: newTransaction.description,
       amount: parseFloat(newTransaction.amount.replace(/[^\d.-]/g, '')),
       type: transactionType === "pendapatan" ? "kredit" : "debit",
       accountId: newTransaction.accountId,
-      createdBy: "admin",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
-    setTransactions([transaction, ...transactions]);
     setIsNewTransactionOpen(false);
     setNewTransaction({
       description: "",
@@ -283,7 +149,6 @@ const TransactionsPage = () => {
                       className="pl-10"
                       value={newTransaction.amount}
                       onChange={(e) => {
-                        // Simple rupiah formatting for input
                         const value = e.target.value.replace(/[^\d]/g, '');
                         if (value) {
                           setNewTransaction({
@@ -364,6 +229,8 @@ const TransactionsPage = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Kode Transaksi</TableHead>
+                <TableHead>No. Invoice</TableHead>
                 <TableHead>Tanggal</TableHead>
                 <TableHead>Deskripsi</TableHead>
                 <TableHead>Akun</TableHead>
@@ -373,18 +240,26 @@ const TransactionsPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTransactions.length === 0 ? (
+              {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center h-24">
+                  <TableCell colSpan={8} className="text-center h-24">
+                    Memuat data...
+                  </TableCell>
+                </TableRow>
+              ) : transactions.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center h-24">
                     Tidak ada transaksi yang ditemukan
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredTransactions.map((transaction) => (
+                transactions.map((transaction) => (
                   <TableRow key={transaction.id}>
+                    <TableCell>{transaction.transaction_code}</TableCell>
+                    <TableCell>{transaction.invoice_number}</TableCell>
                     <TableCell>{formatDate(transaction.date)}</TableCell>
                     <TableCell>{transaction.description}</TableCell>
-                    <TableCell>{getAccountName(transaction.accountId)}</TableCell>
+                    <TableCell>{transaction.chart_of_accounts?.name}</TableCell>
                     <TableCell>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
