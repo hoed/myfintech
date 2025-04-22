@@ -8,6 +8,7 @@ import { useAccounts } from "@/hooks/useAccounts";
 import { formatRupiah, formatDate } from "@/lib/formatter";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DayContentProps } from "react-day-picker";
 
 const Calendar = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -54,20 +55,20 @@ const Calendar = () => {
                 onSelect={setDate}
                 className="rounded-md border mx-auto"
                 components={{
-                  DayContent: ({ day }) => {
+                  DayContent: (props: DayContentProps) => {
                     // Find if there are transactions on this day
                     const hasTransactions = transactions.some(transaction => {
                       const transactionDate = new Date(transaction.date);
                       return (
-                        transactionDate.getDate() === day.date.getDate() &&
-                        transactionDate.getMonth() === day.date.getMonth() &&
-                        transactionDate.getFullYear() === day.date.getFullYear()
+                        transactionDate.getDate() === props.date.getDate() &&
+                        transactionDate.getMonth() === props.date.getMonth() &&
+                        transactionDate.getFullYear() === props.date.getFullYear()
                       );
                     });
 
                     return (
                       <div className="relative w-full h-full flex items-center justify-center">
-                        {day.date.getDate()}
+                        {props.date.getDate()}
                         {hasTransactions && (
                           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
                         )}

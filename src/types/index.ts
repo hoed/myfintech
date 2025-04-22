@@ -10,6 +10,7 @@ export interface Account {
   description?: string;
   created_at: string;
   updated_at: string;
+  chart_of_accounts?: any; // Add this to support nested query results
 }
 
 export type AccountType = 'aset' | 'kewajiban' | 'ekuitas' | 'pendapatan' | 'beban';
@@ -26,6 +27,7 @@ export interface Transaction {
   created_by: string;
   created_at: string;
   updated_at: string;
+  chart_of_accounts?: any; // Add this to support nested query results
 }
 
 export interface BankAccount {

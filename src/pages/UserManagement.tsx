@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -22,36 +21,36 @@ const UserManagement = () => {
       name: "Ahmad Fauzi",
       email: "ahmad.fauzi@keuangan.id",
       role: "admin",
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-20",
+      is_active: true,
+      created_at: "2023-01-01",
+      updated_at: "2023-04-20",
     },
     {
       id: "2",
       name: "Budi Santoso",
       email: "budi.santoso@keuangan.id",
       role: "manager",
-      isActive: true,
-      createdAt: "2023-01-15",
-      updatedAt: "2023-04-19",
+      is_active: true,
+      created_at: "2023-01-15",
+      updated_at: "2023-04-19",
     },
     {
       id: "3",
       name: "Citra Dewi",
       email: "citra.dewi@keuangan.id",
       role: "user",
-      isActive: true,
-      createdAt: "2023-02-01",
-      updatedAt: "2023-04-18",
+      is_active: true,
+      created_at: "2023-02-01",
+      updated_at: "2023-04-18",
     },
     {
       id: "4",
       name: "Deni Pratama",
       email: "deni.pratama@keuangan.id",
       role: "user",
-      isActive: false,
-      createdAt: "2023-02-15",
-      updatedAt: "2023-04-17",
+      is_active: false,
+      created_at: "2023-02-15",
+      updated_at: "2023-04-17",
     },
   ]);
 
@@ -76,9 +75,9 @@ const UserManagement = () => {
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     setUsers([...users, user]);
@@ -93,7 +92,7 @@ const UserManagement = () => {
   const toggleUserStatus = (userId: string) => {
     setUsers(
       users.map((user) =>
-        user.id === userId ? { ...user, isActive: !user.isActive, updatedAt: new Date().toISOString() } : user
+        user.id === userId ? { ...user, is_active: !user.is_active, updated_at: new Date().toISOString() } : user
       )
     );
   };
@@ -252,15 +251,15 @@ const UserManagement = () => {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Switch 
-                          checked={user.isActive}
+                          checked={user.is_active}
                           onCheckedChange={() => toggleUserStatus(user.id)}
                         />
-                        <span className={user.isActive ? "text-success" : "text-muted-foreground"}>
-                          {user.isActive ? "Aktif" : "Nonaktif"}
+                        <span className={user.is_active ? "text-success" : "text-muted-foreground"}>
+                          {user.is_active ? "Aktif" : "Nonaktif"}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>{formatDate(user.createdAt)}</TableCell>
+                    <TableCell>{formatDate(user.created_at)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Button variant="ghost" size="icon">

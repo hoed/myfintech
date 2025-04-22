@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,7 @@ import * as z from "zod";
 import { useBankAccounts } from "@/hooks/useBankAccounts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, DollarSign, PlusCircle } from "lucide-react";
+import { toast } from "@/components/ui/toast";
 
 const bankAccountSchema = z.object({
   name: z.string().min(3, { message: "Nama rekening minimal 3 karakter" }),
@@ -30,6 +30,16 @@ const bankAccountSchema = z.object({
 const BankAccounts = () => {
   const { bankAccounts, isLoading, addBankAccount } = useBankAccounts();
   const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    account_number: "",
+    bank_name: "",
+    currency: "IDR",
+    balance: 0,
+    description: "",
+    is_active: true
+  });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const form = useForm<z.infer<typeof bankAccountSchema>>({
     resolver: zodResolver(bankAccountSchema),
@@ -43,6 +53,39 @@ const BankAccounts = () => {
       is_active: true,
     },
   });
+
+  const handleAddAccount = () => {
+    if (!formData.name || !formData.account_number || !formData.bank_name || !formData.currency) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Semua field wajib diisi",
+      });
+      return;
+    }
+
+    addBankAccount.mutate({
+      name: formData.name,
+      account_number: formData.account_number,
+      bank_name: formData.bank_name,
+      currency: formData.currency as "IDR" | "USD",
+      balance: formData.balance || 0,
+      description: formData.description,
+      is_active: true
+    });
+
+    // Reset form
+    setFormData({
+      name: "",
+      account_number: "",
+      bank_name: "",
+      currency: "IDR",
+      balance: 0,
+      description: "",
+      is_active: true
+    });
+    setIsDialogOpen(false);
+  };
 
   const onSubmit = async (values: z.infer<typeof bankAccountSchema>) => {
     try {

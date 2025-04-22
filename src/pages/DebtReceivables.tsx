@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -35,6 +34,15 @@ const DebtReceivables = () => {
   const { debtReceivables, isLoading, addDebtReceivable } = useDebtReceivables();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"semua" | "hutang" | "piutang">("semua");
+  const [formData, setFormData] = useState<z.infer<typeof debtReceivableSchema>>({
+    type: "hutang",
+    entity_name: "",
+    amount: 0,
+    due_date: "",
+    status: "belum_dibayar",
+    description: ""
+  });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const form = useForm<z.infer<typeof debtReceivableSchema>>({
     resolver: zodResolver(debtReceivableSchema),
@@ -59,6 +67,37 @@ const DebtReceivables = () => {
     } catch (error) {
       console.error("Error adding debt/receivable:", error);
     }
+  };
+
+  const handleAddDebtReceivable = () => {
+    if (!formData.entity_name || !formData.amount || !formData.due_date) {
+      toast({
+        variant: "destructive", 
+        title: "Error",
+        description: "Harap mengisi semua field yang wajib",
+      });
+      return;
+    }
+
+    addDebtReceivable.mutate({
+      type: formData.type || "hutang",
+      entity_name: formData.entity_name,
+      amount: formData.amount,
+      due_date: formData.due_date,
+      status: formData.status || "belum_dibayar",
+      description: formData.description
+    });
+
+    // Reset form
+    setFormData({
+      type: "hutang",
+      entity_name: "",
+      amount: 0,
+      due_date: "",
+      status: "belum_dibayar",
+      description: ""
+    });
+    setIsDialogOpen(false);
   };
 
   const filteredData = debtReceivables.filter((item) => {

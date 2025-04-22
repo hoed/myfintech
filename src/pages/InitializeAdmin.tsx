@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,34 +11,27 @@ const InitializeAdmin = () => {
   const createAdminUser = async () => {
     setStatus("loading");
     try {
-      // Check if user already exists
-      const { data: existingUsers, error: fetchError } = await supabase.auth.admin.listUsers();
-      
-      if (fetchError) {
-        throw fetchError;
-      }
-      
-      const adminExists = existingUsers.users.some(user => user.email === 'admin@example.com');
-      
-      if (adminExists) {
-        setStatus("success");
-        return;
-      }
-      
       // Create admin user
-      const { error: createError } = await supabase.auth.admin.createUser({
+      const { data, error } = await supabase.auth.signUp({
         email: 'admin@example.com',
         password: 'password123',
-        email_confirm: true,
-        user_metadata: {
-          name: 'Admin',
-          role: 'admin'
+        options: {
+          data: {
+            name: 'Admin',
+            role: 'admin'
+          }
         }
       });
       
-      if (createError) {
-        throw createError;
+      if (error) {
+        throw error;
       }
+      
+      // Set email as confirmed
+      await supabase.auth.admin.updateUserById(
+        data?.user?.id || '',
+        { email_confirm: true }
+      );
       
       setStatus("success");
     } catch (err: any) {
@@ -47,10 +40,6 @@ const InitializeAdmin = () => {
       setStatus("error");
     }
   };
-
-  useEffect(() => {
-    createAdminUser();
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -62,6 +51,11 @@ const InitializeAdmin = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {status === "idle" && (
+            <Button onClick={createAdminUser} className="w-full">
+              Create Admin User
+            </Button>
+          )}
           {status === "loading" && <p>Creating admin user...</p>}
           {status === "success" && (
             <div className="text-center">

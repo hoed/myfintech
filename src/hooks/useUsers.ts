@@ -27,7 +27,7 @@ export const useUsers = () => {
         email: user.email || '',
         role: user.user_metadata?.role || 'user',
         avatar: user.user_metadata?.avatar,
-        is_active: !user.banned_until,
+        is_active: !user.banned,
         created_at: user.created_at,
         updated_at: user.updated_at || user.created_at,
       })) as User[];
@@ -68,10 +68,10 @@ export const useUsers = () => {
 
   const toggleUserStatus = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string, isActive: boolean }) => {
-      const { data, error } = await supabase.auth.admin.updateUserById(
-        userId,
-        { banned_until: isActive ? null : '2099-12-31' }
-      );
+      // Use a different approach to ban/unban users
+      const { data, error } = isActive 
+        ? await supabase.auth.admin.updateUserById(userId, { ban_duration: '0 seconds' })
+        : await supabase.auth.admin.updateUserById(userId, { ban_duration: '100 years' });
 
       if (error) throw error;
       return data;

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -18,105 +17,118 @@ import { cn } from "@/lib/utils";
 
 const Ledger = () => {
   // Sample data
-  const accounts: Account[] = [
+  const sampleAccounts: Account[] = [
     {
       id: "1",
-      code: "1-1000",
+      code: "1000",
       name: "Kas",
       type: "aset",
-      balance: 250000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-20",
+      subtype: "lancar",
+      balance: 5000000,
+      is_active: true,
+      created_at: "2023-01-01T00:00:00Z",
+      updated_at: "2023-01-01T00:00:00Z"
     },
     {
       id: "2",
-      code: "1-2000",
+      code: "1200",
       name: "Bank BCA",
       type: "aset",
-      balance: 450000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-19",
+      subtype: "lancar",
+      balance: 45000000,
+      is_active: true,
+      created_at: "2023-01-01T00:00:00Z",
+      updated_at: "2023-01-01T00:00:00Z"
     },
     {
       id: "3",
-      code: "1-3000",
+      code: "1300",
       name: "Piutang Dagang",
       type: "aset",
-      balance: 320000000,
-      isActive: true,
-      createdAt: "2023-01-01",
-      updatedAt: "2023-04-18",
-    },
+      subtype: "lancar",
+      balance: 32000000,
+      is_active: true,
+      created_at: "2023-01-01T00:00:00Z",
+      updated_at: "2023-01-01T00:00:00Z"
+    }
   ];
 
-  const transactions: Transaction[] = [
+  const sampleTransactions: Transaction[] = [
     {
       id: "1",
-      date: "2023-04-20",
-      description: "Saldo awal",
-      amount: 200000000,
-      type: "debit",
-      accountId: "1",
-      createdBy: "admin",
-      createdAt: "2023-04-01T10:30:00",
-      updatedAt: "2023-04-01T10:30:00",
+      date: "2023-04-01",
+      description: "Pendapatan dari penjualan",
+      amount: 1000000,
+      type: "kredit",
+      account_id: "1",
+      transaction_code: "TRX-2023-001",
+      invoice_number: "INV-2023-001",
+      created_by: "admin",
+      created_at: "2023-04-01T10:00:00Z",
+      updated_at: "2023-04-01T10:00:00Z"
     },
     {
       id: "2",
       date: "2023-04-05",
       description: "Penarikan dari Bank BCA",
-      amount: 50000000,
+      amount: 5000000,
       type: "debit",
-      accountId: "1",
-      createdBy: "admin",
-      createdAt: "2023-04-05T14:15:00",
-      updatedAt: "2023-04-05T14:15:00",
+      account_id: "1",
+      transaction_code: "TRX-2023-002",
+      invoice_number: "INV-2023-002",
+      created_by: "admin",
+      created_at: "2023-04-05T14:15:00Z",
+      updated_at: "2023-04-05T14:15:00Z"
     },
     {
       id: "3",
       date: "2023-04-10",
       description: "Pembayaran ke supplier",
-      amount: 35000000,
+      amount: 3500000,
       type: "kredit",
-      accountId: "1",
-      createdBy: "manager",
-      createdAt: "2023-04-10T09:45:00",
-      updatedAt: "2023-04-10T09:45:00",
+      account_id: "1",
+      transaction_code: "TRX-2023-003",
+      invoice_number: "INV-2023-003",
+      created_by: "manager",
+      created_at: "2023-04-10T09:45:00Z",
+      updated_at: "2023-04-10T09:45:00Z"
     },
     {
       id: "4",
       date: "2023-04-15",
       description: "Penerimaan dari customer",
-      amount: 45000000,
+      amount: 4500000,
       type: "debit",
-      accountId: "1",
-      createdBy: "admin",
-      createdAt: "2023-04-15T16:20:00",
-      updatedAt: "2023-04-15T16:20:00",
+      account_id: "1",
+      transaction_code: "TRX-2023-004",
+      invoice_number: "INV-2023-004",
+      created_by: "admin",
+      created_at: "2023-04-15T16:20:00Z",
+      updated_at: "2023-04-15T16:20:00Z"
     },
     {
       id: "5",
       date: "2023-04-18",
       description: "Pembayaran biaya operasional",
-      amount: 10000000,
+      amount: 1000000,
       type: "kredit",
-      accountId: "1",
-      createdBy: "admin",
-      createdAt: "2023-04-18T11:00:00",
-      updatedAt: "2023-04-18T11:00:00",
-    },
+      account_id: "1",
+      transaction_code: "TRX-2023-005",
+      invoice_number: "INV-2023-005",
+      created_by: "admin",
+      created_at: "2023-04-18T11:00:00Z",
+      updated_at: "2023-04-18T11:00:00Z"
+    }
   ];
 
-  const [selectedAccount, setSelectedAccount] = useState<string>(accounts[0].id);
+  const [selectedAccount, setSelectedAccount] = useState<string>(sampleAccounts[0].id);
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(2023, 3, 1)); // April 1, 2023
   const [endDate, setEndDate] = useState<Date | undefined>(new Date(2023, 3, 30)); // April 30, 2023
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredTransactions = transactions.filter((transaction) => {
+  const filteredTransactions = sampleTransactions.filter((transaction) => {
     // Filter by account
-    if (transaction.accountId !== selectedAccount) {
+    if (transaction.account_id !== selectedAccount) {
       return false;
     }
 
@@ -148,7 +160,7 @@ const Ledger = () => {
     };
   });
 
-  const selectedAccountObj = accounts.find((a) => a.id === selectedAccount);
+  const selectedAccountObj = sampleAccounts.find((a) => a.id === selectedAccount);
 
   return (
     <MainLayout>
@@ -174,7 +186,7 @@ const Ledger = () => {
                     <SelectValue placeholder="Pilih akun" />
                   </SelectTrigger>
                   <SelectContent>
-                    {accounts.map((account) => (
+                    {sampleAccounts.map((account) => (
                       <SelectItem key={account.id} value={account.id}>
                         {account.code} - {account.name}
                       </SelectItem>

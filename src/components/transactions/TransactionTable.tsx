@@ -47,7 +47,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, isLoa
                 <TableCell>{transaction.invoice_number}</TableCell>
                 <TableCell>{formatDate(transaction.date)}</TableCell>
                 <TableCell>{transaction.description}</TableCell>
-                <TableCell>{transaction.chart_of_accounts?.name}</TableCell>
+                <TableCell>{transaction.chart_of_accounts?.name || "—"}</TableCell>
                 <TableCell>
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
