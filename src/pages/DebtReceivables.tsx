@@ -32,16 +32,18 @@ const debtReceivableSchema = z.object({
   description: z.string().optional(),
 });
 
+type DebtReceivableFormData = z.infer<typeof debtReceivableSchema>;
+
 const DebtReceivables = () => {
   const { debtReceivables, isLoading, addDebtReceivable } = useDebtReceivables();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"semua" | "hutang" | "piutang">("semua");
-  const [formData, setFormData] = useState({
-    type: "hutang" as "hutang" | "piutang",
+  const [formData, setFormData] = useState<DebtReceivableFormData>({
+    type: "hutang",
     entity_name: "",
     amount: 0,
     due_date: new Date(),
-    status: "belum_dibayar" as "belum_dibayar" | "sebagian_dibayar" | "lunas",
+    status: "belum_dibayar",
     description: ""
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -60,10 +62,17 @@ const DebtReceivables = () => {
 
   const onSubmit = async (values: z.infer<typeof debtReceivableSchema>) => {
     try {
-      await addDebtReceivable.mutateAsync({
-        ...values,
+      // Ensure all required properties are provided
+      const newDebtReceivable: Omit<DebtReceivable, "id" | "created_at" | "updated_at"> = {
+        type: values.type,
+        entity_name: values.entity_name,
+        amount: values.amount,
         due_date: format(values.due_date, "yyyy-MM-dd"),
-      });
+        status: values.status,
+        description: values.description || ""
+      };
+      
+      await addDebtReceivable.mutateAsync(newDebtReceivable);
       setOpen(false);
       form.reset();
     } catch (error) {
@@ -81,14 +90,17 @@ const DebtReceivables = () => {
       return;
     }
 
-    addDebtReceivable.mutate({
+    // Ensure all required properties are provided
+    const newDebtReceivable: Omit<DebtReceivable, "id" | "created_at" | "updated_at"> = {
       type: formData.type,
       entity_name: formData.entity_name,
       amount: formData.amount,
       due_date: format(formData.due_date, "yyyy-MM-dd"),
       status: formData.status,
       description: formData.description || ""
-    });
+    };
+    
+    addDebtReceivable.mutate(newDebtReceivable);
 
     // Reset form
     setFormData({

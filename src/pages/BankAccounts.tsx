@@ -28,14 +28,16 @@ const bankAccountSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
+type BankAccountFormData = z.infer<typeof bankAccountSchema>;
+
 const BankAccounts = () => {
   const { bankAccounts, isLoading, addBankAccount } = useBankAccounts();
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BankAccountFormData>({
     name: "",
     account_number: "",
     bank_name: "",
-    currency: "IDR" as "IDR" | "USD",
+    currency: "IDR",
     balance: 0,
     description: "",
     is_active: true
@@ -65,8 +67,8 @@ const BankAccounts = () => {
       return;
     }
 
-    // Make sure all required fields are defined
-    addBankAccount.mutate({
+    // Make sure all required fields are properly defined
+    const newAccount: Omit<BankAccount, "id" | "created_at" | "updated_at"> = {
       name: formData.name,
       account_number: formData.account_number,
       bank_name: formData.bank_name,
@@ -74,7 +76,9 @@ const BankAccounts = () => {
       balance: formData.balance,
       description: formData.description || "",
       is_active: formData.is_active
-    });
+    };
+    
+    addBankAccount.mutate(newAccount);
 
     setFormData({
       name: "",
@@ -90,7 +94,18 @@ const BankAccounts = () => {
 
   const onSubmit = async (values: z.infer<typeof bankAccountSchema>) => {
     try {
-      await addBankAccount.mutateAsync(values);
+      // Ensure all required properties are provided
+      const newAccount: Omit<BankAccount, "id" | "created_at" | "updated_at"> = {
+        name: values.name,
+        account_number: values.account_number,
+        bank_name: values.bank_name,
+        currency: values.currency,
+        balance: values.balance,
+        description: values.description || "",
+        is_active: values.is_active
+      };
+      
+      await addBankAccount.mutateAsync(newAccount);
       setOpen(false);
       form.reset();
     } catch (error) {
