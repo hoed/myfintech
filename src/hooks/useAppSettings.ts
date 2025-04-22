@@ -56,14 +56,32 @@ export const useAppSettings = () => {
       // Convert value to string for storage if it's an object or boolean
       const stringValue = typeof value === 'object' 
         ? JSON.stringify(value) 
-        : JSON.stringify(value);
+        : value.toString();
       
-      const { error } = await supabase
+      const { data: existingRecord, error: fetchError } = await supabase
         .from('app_settings')
-        .update({ setting_value: stringValue })
-        .eq('setting_key', key);
-
-      if (error) throw error;
+        .select('*')
+        .eq('setting_key', key)
+        .maybeSingle();
+        
+      if (fetchError) throw fetchError;
+      
+      if (existingRecord) {
+        // Update existing record
+        const { error } = await supabase
+          .from('app_settings')
+          .update({ setting_value: stringValue })
+          .eq('setting_key', key);
+          
+        if (error) throw error;
+      } else {
+        // Insert new record
+        const { error } = await supabase
+          .from('app_settings')
+          .insert({ setting_key: key, setting_value: stringValue });
+          
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['appSettings'] });

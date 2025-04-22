@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,11 +14,15 @@ import { useAppSettings, AppSettings } from "@/hooks/useAppSettings";
 import { useApiKeys } from "@/hooks/useApiKeys";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "next-themes";
 
 const Settings = () => {
   const { settings: companySettings, updateSettings, isLoading: companyLoading } = useCompanySettings();
   const { settings: appSettings, updateSetting, isLoading: appLoading } = useAppSettings();
   const { apiKeys, createApiKey, deleteApiKey, isLoading: apiKeysLoading } = useApiKeys();
+  const [backups, setBackups] = useState<any[]>([]);
+  const [loadingBackups, setLoadingBackups] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const handleCompanyUpdate = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,7 +39,19 @@ const Settings = () => {
 
   const handleAppSettingChange = (key: string, value: any) => {
     updateSetting({ key, value });
+    
+    // Update theme when dark_mode setting changes
+    if (key === 'dark_mode') {
+      setTheme(value ? 'dark' : 'light');
+    }
   };
+
+  // Ensure theme is synced with appSettings when component mounts
+  React.useEffect(() => {
+    if (appSettings?.dark_mode !== undefined) {
+      setTheme(appSettings.dark_mode ? 'dark' : 'light');
+    }
+  }, [appSettings?.dark_mode, setTheme]);
 
   const handleCreateApiKey = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,14 +67,14 @@ const Settings = () => {
     try {
       const backupData = {
         timestamp: new Date().toISOString(),
-        settings: companySettings ? { ...companySettings } : null,
-        app_settings: appSettings ? { ...appSettings } : {}
+        settings: companySettings || null,
+        app_settings: appSettings || {}
       };
 
       const { error } = await supabase
         .from('backup_history')
         .insert({
-          backup_name: `Backup_${new Date().toISOString()}`,
+          backup_name: `Backup_${new Date().toISOString().split('T')[0]}`,
           backup_data: backupData,
         });
 
@@ -67,6 +84,9 @@ const Settings = () => {
         title: "Backup Created",
         description: "Your data has been successfully backed up",
       });
+      
+      // Refresh backups list
+      fetchBackups();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -75,6 +95,99 @@ const Settings = () => {
       });
     }
   };
+
+  const fetchBackups = async () => {
+    setLoadingBackups(true);
+    try {
+      const { data, error } = await supabase
+        .from('backup_history')
+        .select('*')
+        .order('backup_date', { ascending: false });
+
+      if (error) throw error;
+      setBackups(data || []);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to fetch backups",
+      });
+    } finally {
+      setLoadingBackups(false);
+    }
+  };
+
+  const handleRestore = async (backupId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('backup_history')
+        .select('backup_data')
+        .eq('id', backupId)
+        .single();
+
+      if (error) throw error;
+      
+      const backupData = data.backup_data;
+      
+      // Restore company settings
+      if (backupData.settings && backupData.settings.id) {
+        await supabase
+          .from('company_settings')
+          .update({
+            company_name: backupData.settings.company_name,
+            company_address: backupData.settings.company_address,
+            company_phone: backupData.settings.company_phone,
+            company_email: backupData.settings.company_email,
+            company_tax_id: backupData.settings.company_tax_id,
+          })
+          .eq('id', backupData.settings.id);
+      }
+      
+      // Restore app settings
+      if (backupData.app_settings) {
+        // For each setting in the backup, update the existing setting or insert a new one
+        for (const [key, value] of Object.entries(backupData.app_settings)) {
+          const { data: existingSetting } = await supabase
+            .from('app_settings')
+            .select('id')
+            .eq('setting_key', key)
+            .maybeSingle();
+            
+          const stringValue = typeof value === 'object' ? JSON.stringify(value) : value?.toString() || '';
+          
+          if (existingSetting) {
+            await supabase
+              .from('app_settings')
+              .update({ setting_value: stringValue })
+              .eq('setting_key', key);
+          } else {
+            await supabase
+              .from('app_settings')
+              .insert({ setting_key: key, setting_value: stringValue });
+          }
+        }
+      }
+      
+      toast({
+        title: "Restore Completed",
+        description: "Your data has been successfully restored",
+      });
+      
+      // Refresh data
+      window.location.reload();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to restore backup",
+      });
+    }
+  };
+
+  // Fetch backups when component mounts
+  React.useEffect(() => {
+    fetchBackups();
+  }, []);
 
   if (companyLoading || appLoading || apiKeysLoading) {
     return (
@@ -285,6 +398,37 @@ const Settings = () => {
                       Backup Data Sekarang
                     </Button>
                   </div>
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-2">
+                  <Label>Riwayat Backup</Label>
+                  {loadingBackups ? (
+                    <p className="text-sm text-muted-foreground">Memuat daftar backup...</p>
+                  ) : backups.length > 0 ? (
+                    <div className="space-y-2">
+                      {backups.map((backup) => (
+                        <div key={backup.id} className="flex items-center justify-between p-2 border rounded">
+                          <div>
+                            <p className="font-medium">{backup.backup_name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {new Date(backup.backup_date).toLocaleString()}
+                            </p>
+                          </div>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleRestore(backup.id)}
+                          >
+                            Restore
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Belum ada backup yang dibuat</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
