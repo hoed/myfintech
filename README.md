@@ -1,6 +1,6 @@
 # MyFinTech - Finance Management App for Manufacturing Businesses
 
-[MyFint](https://myfint.vercel.app) is a comprehensive finance management application tailored for manufacturing businesses in Indonesia. This app helps businesses manage their finances efficiently, providing tools for transaction management, debt tracking, receivables management, and financial reporting. With integration to **Supabase** for backend/database, MyFint offers real-time financial calculations and seamless user experience.
+[MyFint](https://myfintech.vercel.app) is a comprehensive finance management application tailored for manufacturing businesses in Indonesia. This app helps businesses manage their finances efficiently, providing tools for transaction management, debt tracking, receivables management, and financial reporting. With integration to **Supabase** for backend/database, MyFint offers real-time financial calculations and seamless user experience.
 
 ## Features
 
@@ -26,7 +26,7 @@
 ## Deployment
 
 You can view the live version of the app at:  
-[https://myfint.vercel.app](https://myfint.vercel.app)
+[https://myfint.vercel.app](https://myfintech.vercel.app)
 
 ## Installation
 
