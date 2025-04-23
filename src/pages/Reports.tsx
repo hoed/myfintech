@@ -94,8 +94,6 @@ const Reports = () => {
     const currentTab = activeTab;
     const period = reportPeriod;
     
-    // In a real implementation, this would generate the actual file
-    // For this demo, we'll just show a toast notification
     toast({
       title: `Laporan ${currentTab.replace('-', ' ')} diekspor`,
       description: `Format: ${format}, Periode: ${period}`,
@@ -141,7 +139,7 @@ const Reports = () => {
           type: 'monthly',
           income: monthlyData[monthlyData.length - 1].pendapatan,
           expense: monthlyData[monthlyData.length - 1].pengeluaran,
-          reportType: 'monthly', // Add reportType property
+          reportType: 'monthly',
         });
       }
     };

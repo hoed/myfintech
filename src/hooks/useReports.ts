@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -13,7 +12,12 @@ export const useReports = () => {
       try {
         const { data, error } = await supabase
           .from('reports')
-          .select('*')
+          .select(`
+            *,
+            transaction:transactions(transaction_code),
+            debt:debts_receivables(entity_name),
+            account:chart_of_accounts(name)
+          `)
           .order('date', { ascending: false });
 
         if (error) {
@@ -26,11 +30,8 @@ export const useReports = () => {
           throw error;
         }
 
-        // Accept missing reportType for legacy compatibility
-        return (data as any[]).map((r) => ({
-          ...r,
-          reportType: r.reportType || "monthly", // Default to monthly for legacy data
-        }));
+        console.log('Fetched Reports:', data);
+        return data || [];
       } catch (error: any) {
         console.error('Error in reports query:', error);
         toast({
@@ -48,13 +49,13 @@ export const useReports = () => {
       try {
         console.log('Adding report:', newReport);
         // Calculate profit based on income and expense
-        const calculatedProfit = newReport.income - newReport.expense;
-        
+        const calculatedProfit = (newReport.income || 0) - (newReport.expense || 0);
+
         const reportData = {
           ...newReport,
-          profit: calculatedProfit
+          profit: calculatedProfit,
         };
-        
+
         const { data, error } = await supabase
           .from('reports')
           .insert([reportData])
@@ -65,11 +66,11 @@ export const useReports = () => {
           console.error('Supabase error adding report:', error);
           throw new Error(error.message || 'Failed to add report');
         }
-        
+
         if (!data) {
           throw new Error('No data returned from report creation');
         }
-        
+
         console.log('Report added successfully:', data);
         return data;
       } catch (error: any) {
@@ -98,6 +99,6 @@ export const useReports = () => {
   return {
     reports,
     isLoading,
-    addReport
+    addReport,
   };
 };
