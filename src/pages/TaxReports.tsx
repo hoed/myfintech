@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -62,8 +61,8 @@ const TaxReports: React.FC = () => {
           type: "debit", // expense as debit
           transaction_code: `TAX-${Date.now()}`,
           created_by: "System",
-          entity_type: "tax",
-          entity_id: newReport.id
+          entity_id: newReport.id,
+          entity_type: "tax"
         });
         
         toast({

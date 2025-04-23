@@ -1,3 +1,4 @@
+
 export interface Account {
   id: string;
   code: string;
@@ -20,12 +21,17 @@ export interface Transaction {
   description?: string;
   amount: number;
   type: 'debit' | 'kredit';
-  account_id: string;
+  account_id?: string;
   transaction_code: string;
   invoice_number?: string;
   created_by: string;
   created_at: string;
   updated_at: string;
+  entity_type?: string; // Add entity_type as optional
+  entity_id?: string;   // Add entity_id as optional
+  bank_account_id?: string;
+  customer_id?: string;
+  supplier_id?: string;
   chart_of_accounts?: any; // Add this to support nested query results
 }
 
@@ -84,7 +90,7 @@ export interface Report {
   income: number;
   expense: number;
   profit?: number;
-  reportType?: 'daily' | 'monthly' | 'yearly'; // Optional for legacy rows
+  reportType: 'daily' | 'monthly' | 'yearly'; // Required field for all reports
   created_at: string;
   updated_at: string;
 }
