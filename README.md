@@ -26,7 +26,7 @@
 ## Deployment
 
 You can view the live version of the app at:  
-[https://myfint.vercel.app](https://myfintech.vercel.app)
+[https://myfintech.vercel.app](https://myfintech.vercel.app)
 
 ## Installation
 
