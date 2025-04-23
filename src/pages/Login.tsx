@@ -53,17 +53,17 @@ const Login = () => {
       className="min-h-screen flex flex-col justify-between bg-[url('/public/background.webp')] bg-cover bg-center py-12 px-4 sm:px-6 lg:px-8"
     >
       <div className="flex-grow flex items-center justify-center">
-        <div className="max-w-md w-full bg-white/30 backdrop-blur-md border border-white/20 rounded-lg p-8 space-y-6">
+        <div className="max-w-md w-full bg-white/25 backdrop-blur-md border border-white/20 rounded-lg p-8 space-y-6">
           <div className="text-center">
             <img
               src="/logo.png"
               alt="Logo"
               className="mx-auto h-12 w-auto text-primary"
             />
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+            <h2 className="mt-6 text-3xl font-bold text-white">
               Selamat Datang di MyFinTech System
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-gray-200">
               Sistem Akuntansi Keuangan Lengkap untuk Bisnis Anda.
             </p>
           </div>
@@ -158,7 +158,7 @@ const Login = () => {
           </form>
         </div>
       </div>
-      <footer className="text-center text-sm text-gray-100 mt-8">
+      <footer className="text-center text-sm text-white bg-black/30 py-2 mt-8">
         © 2025 Hoed - MyFinTech. Semua Hak Dilindungi.
       </footer>
     </div>
