@@ -55,12 +55,17 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ isOpen, onOpenChange 
       }
     }
 
+    // Generate a simple transaction code (in a real app, this might come from the database)
+    const transactionCode = `TRX-${Date.now().toString().slice(-6)}`;
+
     addTransaction.mutate({
       date: selectedDate.toISOString().split('T')[0],
       description: enhancedDescription,
       amount: parseFloat(newTransaction.amount.replace(/[^\d.-]/g, '')),
       type: transactionType === "pendapatan" ? "kredit" : "debit",
       account_id: newTransaction.account_id,
+      created_by: "system", // In a real app, this would be the current user's ID
+      transaction_code: transactionCode, // Add the required transaction_code
     });
 
     onOpenChange(false);
