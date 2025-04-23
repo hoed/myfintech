@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +20,8 @@ import InitializeAdmin from "./pages/InitializeAdmin";
 import Inventory from "./pages/Inventory";
 import Customers from "./pages/Customers";
 import Suppliers from "./pages/Suppliers";
+import React from "react";
+import TaxReportsPage from "./pages/TaxReportsPage";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => (
           <Route path="/profil" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/init-admin" element={<InitializeAdmin />} />
+          <Route path="/pajak" element={<React.Suspense fallback={<div>Loading...</div>}><TaxReportsPage /></React.Suspense>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

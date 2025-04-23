@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Home,
@@ -14,7 +13,8 @@ import {
   BarChart,
   UserCog,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FileChartLine
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { usePathname } from "@/hooks/use-pathname";
@@ -103,6 +103,12 @@ const Sidebar = () => {
       icon: Settings,
       isSeparator: false,
     },
+    {
+      title: "Laporan Pajak",
+      href: "/pajak",
+      icon: FileChartLine,
+      isSeparator: false,
+    },
   ];
 
   return (
@@ -128,7 +134,7 @@ const Sidebar = () => {
       </div>
       <nav
         className={cn(
-          "flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-y-auto h-full", // Enables scrolling for sidebar menu area
+          "flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-y-auto h-full",
           isCollapsed ? "items-center" : ""
         )}
       >

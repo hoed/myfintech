@@ -606,6 +606,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_user_permission: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       generate_customer_invoice_number: {
         Args: Record<PropertyKey, never>
         Returns: string
