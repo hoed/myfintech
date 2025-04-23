@@ -16,7 +16,8 @@ export const useTransactions = () => {
             *,
             customer:customers(name),
             supplier:suppliers(name),
-            bank_account:bank_accounts(name)
+            bank_account:bank_accounts(name),
+            account:chart_of_accounts(name)
           `)
           .order('date', { ascending: false });
 
