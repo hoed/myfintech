@@ -1,3 +1,4 @@
+
 export interface Account {
   id: string;
   code: string;
@@ -80,10 +81,13 @@ export interface CurrencyExchange {
 export interface Report {
   id: string;
   date: string;
-  type: 'daily' | 'monthly' | 'yearly';
+  type: string;
   income: number;
   expense: number;
-  profit: number;
+  profit?: number;
+  reportType: 'daily' | 'monthly' | 'yearly';
   created_at: string;
   updated_at: string;
 }
+
+export type TaxType = 'ppn' | 'pph21' | 'pph23' | 'pph25';

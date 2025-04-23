@@ -92,6 +92,12 @@ const Sidebar = () => {
       isSeparator: false,
     },
     {
+      title: "Laporan Pajak",
+      href: "/pajak",
+      icon: FileChartLine,
+      isSeparator: false,
+    },
+    {
       title: "Pengguna",
       href: "/pengguna",
       icon: UserCog,
@@ -101,12 +107,6 @@ const Sidebar = () => {
       title: "Pengaturan",
       href: "/pengaturan",
       icon: Settings,
-      isSeparator: false,
-    },
-    {
-      title: "Laporan Pajak",
-      href: "/pajak",
-      icon: FileChartLine,
       isSeparator: false,
     },
   ];

@@ -9,32 +9,39 @@ import { useReports } from "@/hooks/useReports";
 import { formatRupiah } from "@/lib/formatter";
 
 const TAX_TYPES = [
-  { key: "ppn", label: "PPN" },
-  { key: "pph21", label: "PPh 21" },
-  { key: "pph23", label: "PPh 23" },
-  { key: "pph25", label: "PPh 25" },
+  { key: "ppn", label: "PPN", reportType: "monthly" },
+  { key: "pph21", label: "PPh 21", reportType: "monthly" },
+  { key: "pph23", label: "PPh 23", reportType: "monthly" },
+  { key: "pph25", label: "PPh 25", reportType: "monthly" },
 ];
 
-const TaxReportsPage: React.FC = () => {
+const TaxReports: React.FC = () => {
   const { reports, isLoading, addReport } = useReports();
   const [newDialog, setNewDialog] = useState(false);
   const [newType, setNewType] = useState("ppn");
   const [newIncome, setNewIncome] = useState(0);
   const [newExpense, setNewExpense] = useState(0);
 
-  // Filter only type: 'monthly' or type: one of the tax types, for now just show all
+  // Filter only tax-related reports
   const taxReports = reports.filter((r: any) =>
     TAX_TYPES.some(t => r.type?.toLowerCase()?.includes(t.key))
   );
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Get the report type from the selected tax type to ensure it matches the required union type
+    const reportType = TAX_TYPES.find(t => t.key === newType)?.reportType || "monthly";
+    
     await addReport.mutateAsync({
       date: new Date().toISOString(),
       type: newType,
       income: newIncome,
       expense: newExpense,
+      // Use the reportType that matches one of the expected types
+      reportType: reportType
     });
+    
     setNewDialog(false);
     setNewType("ppn");
     setNewIncome(0);
@@ -132,4 +139,4 @@ const TaxReportsPage: React.FC = () => {
   );
 };
 
-export default TaxReportsPage;
+export default TaxReports;
