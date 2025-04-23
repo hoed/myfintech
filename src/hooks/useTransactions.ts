@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -17,8 +16,7 @@ export const useTransactions = () => {
             *,
             customer:customers(name),
             supplier:suppliers(name),
-            bank_account:bank_accounts(name),
-            report:reports(type)
+            bank_account:bank_accounts(name)
           `)
           .order('date', { ascending: false });
 
@@ -32,6 +30,7 @@ export const useTransactions = () => {
           throw error;
         }
 
+        console.log('Fetched Transactions:', data);
         return data || [];
       } catch (error: any) {
         console.error('Error in transactions query:', error);
