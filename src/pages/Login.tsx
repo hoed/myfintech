@@ -60,10 +60,10 @@ const Login = () => {
               alt="Logo"
               className="mx-auto h-12 w-auto text-primary"
             />
-            <h2 className="mt-6 text-3xl font-bold text-white">
+            <h2 className="mt-6 text-3xl font-bold text-black">
               Selamat Datang di MyFinTech System
             </h2>
-            <p className="mt-2 text-sm text-gray-200">
+            <p className="mt-2 text-sm text-black">
               Sistem Akuntansi Keuangan Lengkap untuk Bisnis Anda.
             </p>
           </div>
