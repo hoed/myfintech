@@ -24,7 +24,11 @@ export const useReports = () => {
         throw error;
       }
 
-      return data as Report[];
+      // Accept missing reportType for legacy compatibility
+      return (data as any[]).map((r) => ({
+        ...r,
+        reportType: r.reportType || undefined,
+      }));
     },
   });
 

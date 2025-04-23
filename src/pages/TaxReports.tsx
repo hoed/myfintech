@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -22,26 +21,21 @@ const TaxReports: React.FC = () => {
   const [newIncome, setNewIncome] = useState(0);
   const [newExpense, setNewExpense] = useState(0);
 
-  // Filter only tax-related reports
   const taxReports = reports.filter((r: any) =>
     TAX_TYPES.some(t => r.type?.toLowerCase()?.includes(t.key))
   );
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Get the report type from the selected tax type to ensure it matches the required union type
+
     const reportType = TAX_TYPES.find(t => t.key === newType)?.reportType || "monthly";
-    
     await addReport.mutateAsync({
-      date: new Date().toISOString(),
+      date: new Date().toISOString().substring(0, 10),
       type: newType,
       income: newIncome,
       expense: newExpense,
-      // Use the reportType that matches one of the expected types
-      reportType: reportType
+      reportType: reportType as "monthly",
     });
-    
     setNewDialog(false);
     setNewType("ppn");
     setNewIncome(0);

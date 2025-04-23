@@ -1,4 +1,3 @@
-
 export interface Account {
   id: string;
   code: string;
@@ -85,7 +84,7 @@ export interface Report {
   income: number;
   expense: number;
   profit?: number;
-  reportType: 'daily' | 'monthly' | 'yearly';
+  reportType?: 'daily' | 'monthly' | 'yearly'; // Optional for legacy rows
   created_at: string;
   updated_at: string;
 }
