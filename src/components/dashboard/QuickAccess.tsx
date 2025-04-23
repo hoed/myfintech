@@ -6,8 +6,9 @@ import {
   CalendarDays, 
   ChartBar, 
   Plus, 
-  BanknoteIcon,
-  FileText
+  Banknote, // use correct icon from lucide-react-icons
+  FileText,
+  Package // for inventory/product
 } from "lucide-react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import TransactionForm from "@/components/transactions/TransactionForm";
@@ -36,19 +37,31 @@ const QuickAccess: React.FC = () => {
         <Button 
           variant="outline" 
           className="flex flex-col items-center justify-center h-24 gap-2"
-          onClick={() => navigateTo("/rekening")}
+          // Navigate to 'create new account' page, e.g. /rekening?create=1
+          onClick={() => navigateTo("/rekening?create=1")}
         >
-          <BanknoteIcon className="h-6 w-6" />
-          <span className="text-xs">Rekening Bank</span>
+          <Banknote className="h-6 w-6" />
+          <span className="text-xs">Buat Rekening Baru</span>
         </Button>
 
         <Button 
           variant="outline" 
           className="flex flex-col items-center justify-center h-24 gap-2"
-          onClick={() => navigateTo("/laporan")}
+          // Open add product flow. If modal/form, replace with handler; here, link to /inventaris?add=product
+          onClick={() => navigateTo("/inventaris?add=product")}
+        >
+          <Package className="h-6 w-6" />
+          <span className="text-xs">Tambah Produk</span>
+        </Button>
+
+        <Button 
+          variant="outline" 
+          className="flex flex-col items-center justify-center h-24 gap-2"
+          // Navigate to create new tax report, e.g. /laporan?create_tax=1
+          onClick={() => navigateTo("/laporan?create_tax=1")}
         >
           <FileText className="h-6 w-6" />
-          <span className="text-xs">Laporan Harian</span>
+          <span className="text-xs">Laporan Pajak Baru</span>
         </Button>
 
         <Button 
@@ -58,15 +71,6 @@ const QuickAccess: React.FC = () => {
         >
           <CalendarDays className="h-6 w-6" />
           <span className="text-xs">Kalender</span>
-        </Button>
-
-        <Button 
-          variant="outline" 
-          className="flex flex-col items-center justify-center h-24 gap-2"
-          onClick={() => navigateTo("/inventaris")}
-        >
-          <ChartBar className="h-6 w-6" />
-          <span className="text-xs">Inventaris</span>
         </Button>
       </div>
 
