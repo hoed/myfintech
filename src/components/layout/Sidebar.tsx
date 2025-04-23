@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState } from "react";
 import {
   Home,
   Settings,
@@ -12,19 +13,15 @@ import {
   CalendarDays,
   BarChart,
   UserCog,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { usePathname } from "@/hooks/use-pathname";
 import { cn } from "@/lib/utils";
 
-interface NavItem {
-  title: string;
-  href: string;
-  icon: any;
-  isSeparator: boolean;
-}
-
 const Sidebar = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
 
   const navigationItems = [
@@ -109,27 +106,44 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground py-4">
-      <div className="px-4">
-        <h1 className="text-xl md:text-2xl font-bold">MyFinTech</h1>
-        <p className="text-xs md:text-sm text-sidebar-foreground/70">v1.0.0</p>
+    <div className={cn(
+      "flex flex-col h-full bg-sidebar text-sidebar-foreground py-4 transition-all duration-300 ease-in-out",
+      isCollapsed ? "w-16" : "w-64"
+    )}>
+      <div className="flex items-center justify-between px-4 mb-4">
+        {!isCollapsed && (
+          <div>
+            <h1 className="text-lg md:text-xl font-bold">MyFinTech</h1>
+            <p className="text-xs text-sidebar-foreground/70">v1.0.0</p>
+          </div>
+        )}
+        <button 
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="p-2 rounded-full hover:bg-sidebar-accent/50 transition-colors"
+        >
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
       </div>
-      <nav className="flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-y-auto"> {/* Added overflow-y-auto here */}
+      <nav className={cn(
+        "flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-hidden",
+        isCollapsed ? "items-center" : ""
+      )}>
         {navigationItems.map((item) => (
           <NavLink
             key={item.href}
             to={item.href}
             className={({ isActive }) =>
               cn(
-                "flex items-center px-3 py-2 text-sm md:text-base font-medium rounded-md transition-colors",
+                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                isCollapsed ? "justify-center" : "",
                 isActive
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
               )
             }
           >
-            <item.icon className="w-3 h-3 mr-2 md:w-4 md:h-4" />
-            {item.title}
+            <item.icon className={cn("w-4 h-4", isCollapsed ? "mr-0" : "mr-2")} />
+            {!isCollapsed && <span>{item.title}</span>}
           </NavLink>
         ))}
       </nav>

@@ -4,26 +4,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Transaction } from "@/types";
 
-export const useTransactions = () => {
+export const useCalendar = () => {
   const { data: transactions = [], isLoading } = useQuery({
-    queryKey: ['transactions'],
+    queryKey: ['calendarTransactions'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('transactions')
-        .select(`
-          *,
-          customer:customers(name),
-          supplier:suppliers(name),
-          bank_account:bank_accounts(name),
-          report:reports(type)
-        `)
-        .order('date', { ascending: false });
+        .select('date, description, amount, type')
+        .order('date');
 
       if (error) {
         toast({
-          variant: "destructive",
+          variant: "destructive", 
           title: "Error",
-          description: "Gagal memuat data transaksi",
+          description: "Gagal memuat data kalender",
         });
         throw error;
       }
