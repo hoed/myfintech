@@ -23,6 +23,7 @@ import Customers from "./pages/Customers";
 import Suppliers from "./pages/Suppliers";
 import React from "react";
 import TaxReports from "./pages/TaxReports";
+import { Analytics } from "@vercel/analytics/react"
 
 const queryClient = new QueryClient();
 
