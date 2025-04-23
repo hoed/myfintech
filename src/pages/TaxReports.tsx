@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@
 import { Plus, FileText, FileChartLine } from "lucide-react";
 import { useReports } from "@/hooks/useReports";
 import { formatRupiah } from "@/lib/formatter";
+import { TaxType } from "@/types";
 
 const TAX_TYPES = [
   { key: "ppn", label: "PPN", reportType: "monthly" },
@@ -28,13 +30,16 @@ const TaxReports: React.FC = () => {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const reportType = TAX_TYPES.find(t => t.key === newType)?.reportType || "monthly";
+    const selectedTaxType = TAX_TYPES.find(t => t.key === newType);
+    const reportType = selectedTaxType?.reportType === "monthly" ? "monthly" :
+                       selectedTaxType?.reportType === "daily" ? "daily" : "yearly";
+                       
     await addReport.mutateAsync({
       date: new Date().toISOString().substring(0, 10),
       type: newType,
       income: newIncome,
       expense: newExpense,
-      reportType: reportType as "monthly",
+      reportType: reportType,
     });
     setNewDialog(false);
     setNewType("ppn");

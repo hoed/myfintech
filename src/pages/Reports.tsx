@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,7 @@ const Reports = () => {
           type: 'monthly',
           income: monthlyData[monthlyData.length - 1].pendapatan,
           expense: monthlyData[monthlyData.length - 1].pengeluaran,
+          reportType: 'monthly', // Add reportType property
         });
       }
     };
