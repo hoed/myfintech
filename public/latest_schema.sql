@@ -1,4 +1,3 @@
-
 -- SQL DUMP FOR SYSTEM APP MIGRATION (for backup or setup)
 -- Run these statements on a clean Postgres instance for this system.
 
@@ -11,6 +10,15 @@ CREATE TABLE IF NOT EXISTS users (
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+DROP TABLE IF EXISTS profiles;
+CREATE TABLE IF NOT EXISTS profiles (
+  id SERIAL PRIMARY KEY,
+  user_id uuid,
+  email TEXT,
+  username TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS chart_of_accounts (

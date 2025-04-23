@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import MobileSidebar from "./MobileSidebar";
@@ -8,8 +7,6 @@ import { Toaster } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -45,7 +42,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     }
   }, [navigate]);
 
-  // Function to toggle sidebar state
+  // Function to toggle sidebar state (not used anymore, but keep for potential sidebar collapse state management)
   const toggleSidebar = () => {
     const newState = !sidebarCollapsed;
     setSidebarCollapsed(newState);
@@ -70,16 +67,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <div className="flex-1 overflow-auto flex flex-col">
         <Header />
         <div className="flex-1 relative">
-          {!isMobile && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggleSidebar}
-              className="absolute top-4 left-0 z-10 rounded-l-none rounded-r-md shadow-md bg-white"
-            >
-              {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-            </Button>
-          )}
+          {/* Remove sidebar arrow toggle button here */}
           <main className="p-4 md:p-6 flex-1">
             {children}
           </main>
