@@ -34,22 +34,27 @@ export const useReports = () => {
 
   const addReport = useMutation({
     mutationFn: async (newReport: Omit<Report, 'id' | 'created_at' | 'updated_at' | 'profit'>) => {
-      // Calculate profit based on income and expense
-      const calculatedProfit = newReport.income - newReport.expense;
-      
-      const reportData = {
-        ...newReport,
-        profit: calculatedProfit
-      };
-      
-      const { data, error } = await supabase
-        .from('reports')
-        .insert([reportData])
-        .select()
-        .single();
+      try {
+        // Calculate profit based on income and expense
+        const calculatedProfit = newReport.income - newReport.expense;
+        
+        const reportData = {
+          ...newReport,
+          profit: calculatedProfit
+        };
+        
+        const { data, error } = await supabase
+          .from('reports')
+          .insert([reportData])
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error('Error adding report:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });

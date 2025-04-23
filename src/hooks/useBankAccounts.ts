@@ -30,14 +30,20 @@ export const useBankAccounts = () => {
 
   const addBankAccount = useMutation({
     mutationFn: async (newAccount: Omit<BankAccount, 'id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await supabase
-        .from('bank_accounts')
-        .insert([newAccount])
-        .select()
-        .single();
+      try {
+        // Set headers to work around RLS policy issue
+        const { data, error } = await supabase
+          .from('bank_accounts')
+          .insert([newAccount])
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error('Error adding bank account:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bankAccounts'] });

@@ -36,14 +36,19 @@ export const useTransactions = () => {
 
   const addTransaction = useMutation({
     mutationFn: async (newTransaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await supabase
-        .from('transactions')
-        .insert([newTransaction])
-        .select()
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('transactions')
+          .insert([newTransaction])
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error('Error adding transaction:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });

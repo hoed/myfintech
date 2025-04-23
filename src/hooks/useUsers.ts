@@ -30,20 +30,25 @@ export const useUsers = () => {
 
   const addUser = useMutation({
     mutationFn: async (newUser: { email: string, password: string, name: string, role: 'admin' | 'manager' | 'user' }) => {
-      // Create a new user in the users table
-      const { data, error } = await supabase
-        .from('users')
-        .insert([{
-          name: newUser.name,
-          email: newUser.email,
-          role: newUser.role,
-          is_active: true
-        }])
-        .select()
-        .single();
+      try {
+        // Create a new user in the users table
+        const { data, error } = await supabase
+          .from('users')
+          .insert([{
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+            is_active: true
+          }])
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error('Error adding user:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -64,15 +69,20 @@ export const useUsers = () => {
 
   const toggleUserStatus = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string, isActive: boolean }) => {
-      const { data, error } = await supabase
-        .from('users')
-        .update({ is_active: !isActive })
-        .eq('id', userId)
-        .select()
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .update({ is_active: !isActive })
+          .eq('id', userId)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error('Error toggling user status:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
