@@ -1,86 +1,85 @@
-# MyFinTech - Finance Management App for Manufacturing Businesses
+# MyFinTech - Aplikasi Manajemen Keuangan untuk Bisnis Manufaktur
 
-[MyFinTech](https://myfintech.vercel.app) is a comprehensive finance management application tailored for manufacturing businesses in Indonesia. This app helps businesses manage their finances efficiently, providing tools for transaction management, debt tracking, receivables management, and financial reporting. With integration to **Supabase** for backend/database, MyFint offers real-time financial calculations and seamless user experience.
+[MyFinTech](https://myfintech.vercel.app) adalah aplikasi manajemen keuangan yang dirancang khusus untuk bisnis manufaktur di Indonesia. Aplikasi ini membantu bisnis mengelola keuangan mereka secara efisien, menyediakan alat untuk manajemen transaksi, pelacakan utang, manajemen piutang, dan pelaporan keuangan. Dengan integrasi ke **Supabase** untuk backend/database, MyFinTech menawarkan perhitungan keuangan real-time dan pengalaman pengguna yang mulus.
 
-## Features
+## Fitur
 
-- **Chart of Accounts (COA):** Manage your accounts with unique codes and descriptions for all financial categories.
-- **Transaction Management:** Record income and expenses, link them to your accounts, and keep track of all financial activities.
-- **Debt Tracking:** Monitor outstanding debts (utang) and receivables (piutang) with payment statuses and aging reports.
-- **Bank Account Management:** Manage multiple bank accounts and track balances, deposits, and withdrawals.
-- **Auto Calculations:** Real-time computation of balances, cash flow, and taxes.
-- **Tax Reporting:** Generate tax reports such as PPN, PPh 21/23/25, and tax withholding summaries.
-- **User Management:** Manage user profiles and set up role-based access (Administrator, Management).
-- **Financial Reports:** Filter daily, weekly, and monthly reports, including income, expenses, and cash flow.
-- **Integrated Inventory System:** Connect to inventory system using API Key.
-- **Calendar View:** View all financial activities in an interactive calendar.
-- **Visual Financial Graphs:** Analyze financial performance with monthly and yearly graphs.
-- **Secure Password Management:** Ensure secure password updates and reset mechanisms.
+- **Daftar Akun (COA):** Kelola akun Anda dengan kode dan deskripsi unik untuk semua kategori keuangan.
+- **Manajemen Transaksi:** Catat pendapatan dan pengeluaran, hubungkan dengan akun Anda, dan pantau semua aktivitas keuangan.
+- **Pelacakan Utang:** Pantau utang yang belum dibayar (utang) dan piutang dengan status pembayaran dan laporan penuaan.
+- **Manajemen Rekening Bank:** Kelola beberapa rekening bank dan lacak saldo, setoran, serta penarikan.
+- **Perhitungan Otomatis:** Perhitungan real-time untuk saldo, arus kas, dan pajak.
+- **Pelaporan Pajak:** Hasilkan laporan pajak seperti PPN, PPh 21/23/25, dan ringkasan pemotongan pajak.
+- **Manajemen Pengguna:** Kelola profil pengguna dan atur akses berbasis peran (Administrator, Manajemen).
+- **Laporan Keuangan:** Filter laporan harian, mingguan, dan bulanan, termasuk pendapatan, pengeluaran, dan arus kas.
+- **Sistem Inventaris Terintegrasi:** Terhubung ke sistem inventaris menggunakan API Key.
+- **Tampilan Kalender:** Lihat semua aktivitas keuangan dalam kalender interaktif.
+- **Grafik Keuangan Visual:** Analisis kinerja keuangan dengan grafik bulanan dan tahunan **Manajemen Kata Sandi yang Aman:** Pastikan pembaruan dan mekanisme reset kata sandi yang aman.
 
-## Technologies Used
+## Teknologi yang Digunakan
 
-- **Frontend:** Vite + React (with Tailwind CSS for styling)
-- **Backend:** Supabase (PostgreSQL, Authentication, and Storage)
+- **Frontend:** Vite + React (dengan Tailwind CSS untuk styling)
+- **Backend:** Supabase (PostgreSQL, Autentikasi, dan Penyimpanan)
 - **Deployment:** Vercel
 
-## Deployment
+## Penyebaran
 
-You can view the live version of the app at:  
+Anda dapat melihat versi live dari aplikasi di:  
 [https://myfintech.vercel.app](https://myfintech.vercel.app)
 
-## Installation
+## Instalasi
 
-To run this project locally, follow the steps below:
+Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
-### 1. Clone the repository
+### 1. Kloning repositori
 
 ```bash
 git clone https://github.com/yourusername/myfint.git
 cd myfint
 ```
 
-### 2. Install dependencies
+### 2. Instal dependensi
 
 ```bash
 npm install
 ```
 
-### 3. Configure environment variables
+### 3. Konfigurasi variabel lingkungan
 
-Create a `.env` file in the root of the project and add your **Supabase** credentials. You can find them in the Supabase dashboard under your project settings.
+Buat file `.env` di root proyek dan tambahkan kredensial **Supabase** Anda. Anda dapat menemukannya di dashboard Supabase di bawah pengaturan proyek Anda.
 
 ```env
 VITE_SUPABASE_URL=your-supabase-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
-### 4. Run the development server
+### 4. Jalankan server pengembangan
 
 ```bash
 npm run dev
 ```
 
-This will start the development server. Open your browser and go to [http://localhost:3000](http://localhost:3000) to view the application.
+Ini akan memulai server pengembangan. Buka browser Anda dan kunjungi [http://localhost:3000](http://localhost:3000) untuk melihat aplikasi.
 
-## Supabase Integration
+## Integrasi Supabase
 
-This project is integrated with **Supabase**, which provides real-time database functionality, user authentication, and file storage.
+Proyek ini terintegrasi dengan **Supabase**, yang menyediakan fungsi database real-time, autentikasi pengguna, dan penyimpanan file.
 
-### Setting up Supabase:
+### Menyiapkan Supabase:
 
-1. Create a new project on [Supabase](https://supabase.io).
-2. Set up your database tables (Accounts, Transactions, etc.) according to the schema defined in the project.
-3. Obtain the **Supabase URL** and **anon key** from your Supabase dashboard.
-4. Add these keys to your `.env` file as mentioned in the Installation step.
+1. Buat proyek baru di [Supabase](https://supabase.io).
+2. Siapkan tabel database Anda (Akun, Transaksi, dll.) sesuai dengan skema yang ditentukan dalam proyek.
+3. Dapatkan **Supabase URL** dan **anon key** dari dashboard Supabase Anda.
+4. Tambahkan kunci ini ke file `.env` seperti yang disebutkan pada langkah Instalasi.
 
-## Usage
+## Penggunaan
 
-- **Admin Dashboard:** Provides full access to all features such as adding new accounts, creating transactions, managing users, and generating reports.
-- **Management Dashboard:** Limited access to viewing reports and monitoring financial activities.
-- **User Profile Management:** Users can update their profiles, set passwords, and manage their login credentials securely.
+- **Dashboard Admin:** Memberikan akses penuh ke semua fitur seperti menambahkan akun baru, membuat transaksi, mengelola pengguna, dan menghasilkan laporan.
+- **Dashboard Manajemen:** Akses terbatas untuk melihat laporan dan memantau aktivitas keuangan.
+- **Manajemen Profil Pengguna:** Pengguna dapat memperbarui profil mereka, mengatur kata sandi, dan mengelola kredensial login mereka dengan aman.
 
-## Contributing
+## Kontribusi
 
-Contributions are welcome! If you'd like to contribute to the project, please follow these steps:
+Kontribusi sangat diterima! Jika Anda ingin berkontribusi pada proyek ini, silakan ikuti langkah-langkah berikut:
 
-1. Fork this repository
+1. Fork repositori ini
