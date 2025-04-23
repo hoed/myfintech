@@ -27,16 +27,24 @@ export const useReports = () => {
       // Accept missing reportType for legacy compatibility
       return (data as any[]).map((r) => ({
         ...r,
-        reportType: r.reportType || undefined,
+        reportType: r.reportType || "monthly", // Default to monthly for legacy data
       }));
     },
   });
 
   const addReport = useMutation({
     mutationFn: async (newReport: Omit<Report, 'id' | 'created_at' | 'updated_at' | 'profit'>) => {
+      // Calculate profit based on income and expense
+      const calculatedProfit = newReport.income - newReport.expense;
+      
+      const reportData = {
+        ...newReport,
+        profit: calculatedProfit
+      };
+      
       const { data, error } = await supabase
         .from('reports')
-        .insert([newReport])
+        .insert([reportData])
         .select()
         .single();
 

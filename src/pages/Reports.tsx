@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatRupiah } from "@/lib/formatter";
-import { Download, Printer, Filter, ChevronDown } from "lucide-react";
+import { Download, Printer, FileText, ChevronDown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   BarChart, 
@@ -24,11 +23,14 @@ import {
 } from "recharts";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useReports } from "@/hooks/useReports";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Reports = () => {
   const { reports, isLoading, addReport } = useReports();
   const [reportPeriod, setReportPeriod] = useState("bulan-ini");
   const [activeTab, setActiveTab] = useState("laporan-keuangan");
+  const navigate = useNavigate();
 
   // Sample data for monthly financial report
   const monthlyData = [
@@ -39,6 +41,14 @@ const Reports = () => {
     { name: "Mei", pendapatan: 190000000, pengeluaran: 120000000, laba: 70000000 },
     { name: "Jun", pendapatan: 200000000, pengeluaran: 130000000, laba: 70000000 },
   ];
+
+  // Get tax reports from the reports
+  const taxReports = reports.filter((r: any) => 
+    r.type?.toLowerCase().includes('ppn') || 
+    r.type?.toLowerCase().includes('pph21') || 
+    r.type?.toLowerCase().includes('pph23') || 
+    r.type?.toLowerCase().includes('pph25')
+  );
 
   // Sample data for expenses by category
   const expenseData = [
@@ -77,6 +87,49 @@ const Reports = () => {
       );
     }
     return null;
+  };
+
+  // Function to handle export to different formats
+  const handleExport = (format: string) => {
+    const currentTab = activeTab;
+    const period = reportPeriod;
+    
+    // In a real implementation, this would generate the actual file
+    // For this demo, we'll just show a toast notification
+    toast({
+      title: `Laporan ${currentTab.replace('-', ' ')} diekspor`,
+      description: `Format: ${format}, Periode: ${period}`,
+    });
+  };
+
+  // Function to create daily report
+  const createDailyReport = async () => {
+    try {
+      const now = new Date();
+      await addReport.mutateAsync({
+        date: now.toISOString().substring(0, 10),
+        type: 'daily_report',
+        income: Math.floor(Math.random() * 5000000) + 1000000,
+        expense: Math.floor(Math.random() * 3000000) + 500000,
+        reportType: 'daily',
+      });
+      
+      toast({
+        title: "Laporan harian berhasil dibuat",
+        description: `Tanggal: ${now.toLocaleDateString('id-ID')}`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Gagal membuat laporan harian",
+        description: "Terjadi kesalahan saat membuat laporan harian",
+      });
+    }
+  };
+
+  // Function to navigate to tax reports page
+  const goToTaxReports = () => {
+    navigate('/pajak');
   };
 
   useEffect(() => {
@@ -127,15 +180,32 @@ const Reports = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>Ekspor ke PDF</DropdownMenuItem>
-                <DropdownMenuItem>Ekspor ke Excel</DropdownMenuItem>
-                <DropdownMenuItem>Ekspor ke CSV</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('PDF')}>
+                  Ekspor ke PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('Excel')}>
+                  Ekspor ke Excel
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('CSV')}>
+                  Ekspor ke CSV
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" onClick={() => window.print()}>
               <Printer size={16} />
             </Button>
           </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={createDailyReport} className="gap-1">
+            <FileText size={16} />
+            <span>Buat Laporan Harian</span>
+          </Button>
+          <Button variant="outline" onClick={goToTaxReports} className="gap-1">
+            <FileText size={16} />
+            <span>Lihat Laporan Pajak</span>
+          </Button>
         </div>
 
         <Tabs defaultValue="laporan-keuangan" value={activeTab} onValueChange={setActiveTab}>
@@ -217,9 +287,16 @@ const Reports = () => {
           <TabsContent value="laporan-pajak" className="mt-6">
             <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
               <Card className="md:col-span-3">
-                <CardHeader className="pb-3">
-                  <CardTitle>Laporan Pajak Bulanan</CardTitle>
-                  <CardDescription>Rekap pajak PPN, PPh 21, PPh 23, dan PPh 25</CardDescription>
+                <CardHeader className="pb-3 flex flex-row justify-between items-center">
+                  <div>
+                    <CardTitle>Laporan Pajak Bulanan</CardTitle>
+                    <CardDescription>Rekap pajak PPN, PPh 21, PPh 23, dan PPh 25</CardDescription>
+                  </div>
+                  {taxReports.length > 0 && (
+                    <Button variant="outline" size="sm" onClick={goToTaxReports}>
+                      Lihat Semua
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <div className="h-[400px] w-full">

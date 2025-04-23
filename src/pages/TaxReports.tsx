@@ -4,10 +4,13 @@ import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { Plus, FileText, FileChartLine } from "lucide-react";
+import { Plus, FileText, FileChartLine, ArrowRight } from "lucide-react";
 import { useReports } from "@/hooks/useReports";
 import { formatRupiah } from "@/lib/formatter";
 import { TaxType } from "@/types";
+import { useNavigate } from "react-router-dom";
+import { useTransactions } from "@/hooks/useTransactions";
+import { toast } from "@/hooks/use-toast";
 
 const TAX_TYPES = [
   { key: "ppn", label: "PPN", reportType: "monthly" },
@@ -18,10 +21,12 @@ const TAX_TYPES = [
 
 const TaxReports: React.FC = () => {
   const { reports, isLoading, addReport } = useReports();
+  const { addTransaction } = useTransactions();
   const [newDialog, setNewDialog] = useState(false);
   const [newType, setNewType] = useState("ppn");
   const [newIncome, setNewIncome] = useState(0);
   const [newExpense, setNewExpense] = useState(0);
+  const navigate = useNavigate();
 
   const taxReports = reports.filter((r: any) =>
     TAX_TYPES.some(t => r.type?.toLowerCase()?.includes(t.key))
@@ -34,17 +39,53 @@ const TaxReports: React.FC = () => {
     const reportType = selectedTaxType?.reportType === "monthly" ? "monthly" :
                        selectedTaxType?.reportType === "daily" ? "daily" : "yearly";
                        
-    await addReport.mutateAsync({
+    const newReport = await addReport.mutateAsync({
       date: new Date().toISOString().substring(0, 10),
       type: newType,
       income: newIncome,
       expense: newExpense,
       reportType: reportType,
     });
+    
     setNewDialog(false);
     setNewType("ppn");
     setNewIncome(0);
     setNewExpense(0);
+    
+    // Create corresponding transaction
+    try {
+      if (newReport) {
+        await addTransaction.mutateAsync({
+          date: new Date().toISOString().substring(0, 10),
+          description: `Laporan Pajak ${selectedTaxType?.label || newType}`,
+          amount: newExpense,
+          type: "debit", // expense as debit
+          transaction_code: `TAX-${Date.now()}`,
+          created_by: "System",
+          entity_type: "tax",
+          entity_id: newReport.id
+        });
+        
+        toast({
+          title: "Berhasil",
+          description: "Laporan pajak dan transaksi berhasil ditambahkan",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Gagal menambahkan transaksi untuk laporan pajak",
+      });
+    }
+  };
+  
+  const goToReports = () => {
+    navigate('/laporan');
+  };
+  
+  const goToTransactions = () => {
+    navigate('/transaksi');
   };
 
   return (
@@ -96,6 +137,18 @@ const TaxReports: React.FC = () => {
           </DialogContent>
         </Dialog>
       </div>
+      
+      <div className="flex gap-2 mb-4">
+        <Button variant="outline" size="sm" onClick={goToReports}>
+          <FileText className="w-4 h-4 mr-2" />
+          Lihat Semua Laporan
+        </Button>
+        <Button variant="outline" size="sm" onClick={goToTransactions}>
+          <ArrowRight className="w-4 h-4 mr-2" />
+          Lihat Transaksi
+        </Button>
+      </div>
+      
       <div className="bg-white shadow rounded-lg p-4 overflow-x-auto">
         <Table>
           <TableHeader>
@@ -105,12 +158,13 @@ const TaxReports: React.FC = () => {
               <TableHead>Pendapatan</TableHead>
               <TableHead>Pengeluaran</TableHead>
               <TableHead>Laba Bersih</TableHead>
+              <TableHead>Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {taxReports.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center">Tidak ada laporan pajak.</TableCell>
+                <TableCell colSpan={6} className="text-center">Tidak ada laporan pajak.</TableCell>
               </TableRow>
             )}
             {taxReports.map(r => (
@@ -120,6 +174,11 @@ const TaxReports: React.FC = () => {
                 <TableCell>{formatRupiah(r.income)}</TableCell>
                 <TableCell>{formatRupiah(r.expense)}</TableCell>
                 <TableCell>{formatRupiah(r.profit ?? (r.income ?? 0) - (r.expense ?? 0))}</TableCell>
+                <TableCell>
+                  <Button variant="ghost" size="sm" onClick={goToTransactions}>
+                    Lihat Transaksi
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
