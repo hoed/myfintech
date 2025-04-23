@@ -10,27 +10,40 @@ export const useUsers = () => {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (error) {
+        if (error) {
+          console.error('Error fetching users:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to load users: ${error.message}`,
+          });
+          throw error;
+        }
+
+        return data as User[];
+      } catch (error: any) {
+        console.error('Error in users query:', error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Gagal memuat data pengguna",
+          description: `Failed to load users: ${error.message || 'Unknown error'}`,
         });
         throw error;
       }
-
-      return data as User[];
     },
   });
 
   const addUser = useMutation({
     mutationFn: async (newUser: { email: string, password: string, name: string, role: 'admin' | 'manager' | 'user' }) => {
       try {
+        console.log('Adding user:', { ...newUser, password: '[REDACTED]' });
+        
         // Create a new user in the users table
         const { data, error } = await supabase
           .from('users')
@@ -43,25 +56,35 @@ export const useUsers = () => {
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error adding user:', error);
+          throw new Error(error.message || 'Failed to add user');
+        }
+        
+        if (!data) {
+          throw new Error('No data returned from user creation');
+        }
+        
+        console.log('User added successfully:', data);
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error adding user:', error);
         throw error;
       }
     },
     onSuccess: () => {
+      console.log('User added successfully, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast({
         title: "Berhasil",
         description: "Pengguna berhasil ditambahkan",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Gagal menambahkan pengguna",
+        description: `Failed to add user: ${error.message || 'Unknown error'}`,
       });
       console.error('Error adding user:', error);
     },
@@ -70,6 +93,8 @@ export const useUsers = () => {
   const toggleUserStatus = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string, isActive: boolean }) => {
       try {
+        console.log('Toggling user status:', { userId, isActive: !isActive });
+        
         const { data, error } = await supabase
           .from('users')
           .update({ is_active: !isActive })
@@ -77,25 +102,35 @@ export const useUsers = () => {
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error toggling user status:', error);
+          throw new Error(error.message || 'Failed to toggle user status');
+        }
+        
+        if (!data) {
+          throw new Error('No data returned from user status update');
+        }
+        
+        console.log('User status toggled successfully:', data);
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error toggling user status:', error);
         throw error;
       }
     },
     onSuccess: () => {
+      console.log('User status toggled successfully, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast({
         title: "Berhasil",
         description: "Status pengguna berhasil diubah",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Gagal mengubah status pengguna",
+        description: `Failed to toggle user status: ${error.message || 'Unknown error'}`,
       });
       console.error('Error toggling user status:', error);
     },

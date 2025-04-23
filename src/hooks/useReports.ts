@@ -10,31 +10,43 @@ export const useReports = () => {
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ['reports'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('reports')
-        .select('*')
-        .order('date', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('reports')
+          .select('*')
+          .order('date', { ascending: false });
 
-      if (error) {
+        if (error) {
+          console.error('Error fetching reports:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to load reports: ${error.message}`,
+          });
+          throw error;
+        }
+
+        // Accept missing reportType for legacy compatibility
+        return (data as any[]).map((r) => ({
+          ...r,
+          reportType: r.reportType || "monthly", // Default to monthly for legacy data
+        }));
+      } catch (error: any) {
+        console.error('Error in reports query:', error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Gagal memuat data laporan",
+          description: `Failed to load reports: ${error.message || 'Unknown error'}`,
         });
         throw error;
       }
-
-      // Accept missing reportType for legacy compatibility
-      return (data as any[]).map((r) => ({
-        ...r,
-        reportType: r.reportType || "monthly", // Default to monthly for legacy data
-      }));
     },
   });
 
   const addReport = useMutation({
     mutationFn: async (newReport: Omit<Report, 'id' | 'created_at' | 'updated_at' | 'profit'>) => {
       try {
+        console.log('Adding report:', newReport);
         // Calculate profit based on income and expense
         const calculatedProfit = newReport.income - newReport.expense;
         
@@ -49,25 +61,35 @@ export const useReports = () => {
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error adding report:', error);
+          throw new Error(error.message || 'Failed to add report');
+        }
+        
+        if (!data) {
+          throw new Error('No data returned from report creation');
+        }
+        
+        console.log('Report added successfully:', data);
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error adding report:', error);
         throw error;
       }
     },
     onSuccess: () => {
+      console.log('Report added successfully, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['reports'] });
       toast({
         title: "Berhasil",
         description: "Laporan berhasil ditambahkan",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Gagal menambahkan laporan",
+        description: `Failed to add report: ${error.message || 'Unknown error'}`,
       });
       console.error('Error adding report:', error);
     },

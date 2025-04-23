@@ -10,53 +10,74 @@ export const useBankAccounts = () => {
   const { data: bankAccounts = [], isLoading } = useQuery({
     queryKey: ['bankAccounts'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('bank_accounts')
-        .select('*')
-        .order('name');
+      try {
+        const { data, error } = await supabase
+          .from('bank_accounts')
+          .select('*')
+          .order('name');
 
-      if (error) {
+        if (error) {
+          console.error('Error fetching bank accounts:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to load bank accounts: ${error.message}`,
+          });
+          throw error;
+        }
+
+        return data as BankAccount[];
+      } catch (error: any) {
+        console.error('Error in bankAccounts query:', error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Gagal memuat data rekening bank",
+          description: `Failed to load bank accounts: ${error.message || 'Unknown error'}`,
         });
         throw error;
       }
-
-      return data as BankAccount[];
     },
   });
 
   const addBankAccount = useMutation({
     mutationFn: async (newAccount: Omit<BankAccount, 'id' | 'created_at' | 'updated_at'>) => {
       try {
-        // Set headers to work around RLS policy issue
+        console.log('Adding bank account:', newAccount);
         const { data, error } = await supabase
           .from('bank_accounts')
           .insert([newAccount])
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error adding bank account:', error);
+          throw new Error(error.message || 'Failed to add bank account');
+        }
+        
+        if (!data) {
+          throw new Error('No data returned from bank account creation');
+        }
+        
+        console.log('Bank account added successfully:', data);
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error adding bank account:', error);
         throw error;
       }
     },
     onSuccess: () => {
+      console.log('Bank account added successfully, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['bankAccounts'] });
       toast({
         title: "Berhasil",
         description: "Rekening bank berhasil ditambahkan",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Gagal menambahkan rekening bank",
+        description: `Gagal menambahkan rekening bank: ${error.message || 'Unknown error'}`,
       });
       console.error('Error adding bank account:', error);
     },

@@ -10,47 +10,75 @@ export const useChartOfAccounts = () => {
   const { data: accounts = [], isLoading } = useQuery<Account[]>({
     queryKey: ['chartOfAccounts'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('chart_of_accounts')
-        .select('*')
-        .order('code');
+      try {
+        const { data, error } = await supabase
+          .from('chart_of_accounts')
+          .select('*')
+          .order('code');
 
-      if (error) {
+        if (error) {
+          console.error('Error fetching accounts:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to load accounts: ${error.message}`,
+          });
+          throw error;
+        }
+
+        return data as Account[];
+      } catch (error: any) {
+        console.error('Error in accounts query:', error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Gagal memuat data akun",
+          description: `Failed to load accounts: ${error.message || 'Unknown error'}`,
         });
         throw error;
       }
-
-      return data as Account[];
     },
   });
 
   const addAccount = useMutation({
     mutationFn: async (newAccount: Omit<Account, 'id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await supabase
-        .from('chart_of_accounts')
-        .insert([newAccount])
-        .select()
-        .single();
+      try {
+        console.log('Adding account:', newAccount);
+        
+        const { data, error } = await supabase
+          .from('chart_of_accounts')
+          .insert([newAccount])
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) {
+          console.error('Supabase error adding account:', error);
+          throw new Error(error.message || 'Failed to add account');
+        }
+        
+        if (!data) {
+          throw new Error('No data returned from account creation');
+        }
+        
+        console.log('Account added successfully:', data);
+        return data;
+      } catch (error: any) {
+        console.error('Error adding account:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
+      console.log('Account added successfully, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['chartOfAccounts'] });
       toast({
         title: "Berhasil",
         description: "Akun berhasil ditambahkan",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Gagal menambahkan akun",
+        description: `Failed to add account: ${error.message || 'Unknown error'}`,
       });
       console.error('Error adding account:', error);
     },
@@ -58,28 +86,45 @@ export const useChartOfAccounts = () => {
 
   const updateAccount = useMutation({
     mutationFn: async (account: Account) => {
-      const { data, error } = await supabase
-        .from('chart_of_accounts')
-        .update(account)
-        .eq('id', account.id)
-        .select()
-        .single();
+      try {
+        console.log('Updating account:', account);
+        
+        const { data, error } = await supabase
+          .from('chart_of_accounts')
+          .update(account)
+          .eq('id', account.id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) {
+          console.error('Supabase error updating account:', error);
+          throw new Error(error.message || 'Failed to update account');
+        }
+        
+        if (!data) {
+          throw new Error('No data returned from account update');
+        }
+        
+        console.log('Account updated successfully:', data);
+        return data;
+      } catch (error: any) {
+        console.error('Error updating account:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
+      console.log('Account updated successfully, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['chartOfAccounts'] });
       toast({
         title: "Berhasil",
         description: "Akun berhasil diperbarui",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Gagal memperbarui akun",
+        description: `Failed to update account: ${error.message || 'Unknown error'}`,
       });
       console.error('Error updating account:', error);
     },
@@ -87,26 +132,39 @@ export const useChartOfAccounts = () => {
 
   const deleteAccount = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('chart_of_accounts')
-        .delete()
-        .eq('id', id);
+      try {
+        console.log('Deleting account:', id);
+        
+        const { error } = await supabase
+          .from('chart_of_accounts')
+          .delete()
+          .eq('id', id);
 
-      if (error) throw error;
-      return id;
+        if (error) {
+          console.error('Supabase error deleting account:', error);
+          throw new Error(error.message || 'Failed to delete account');
+        }
+        
+        console.log('Account deleted successfully');
+        return id;
+      } catch (error: any) {
+        console.error('Error deleting account:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
+      console.log('Account deleted successfully, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['chartOfAccounts'] });
       toast({
         title: "Berhasil",
         description: "Akun berhasil dihapus",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Gagal menghapus akun",
+        description: `Failed to delete account: ${error.message || 'Unknown error'}`,
       });
       console.error('Error deleting account:', error);
     },

@@ -10,58 +10,80 @@ export const useTransactions = () => {
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ['transactions'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select(`
-          *,
-          customer:customers(name),
-          supplier:suppliers(name),
-          bank_account:bank_accounts(name),
-          report:reports(type)
-        `)
-        .order('date', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('transactions')
+          .select(`
+            *,
+            customer:customers(name),
+            supplier:suppliers(name),
+            bank_account:bank_accounts(name),
+            report:reports(type)
+          `)
+          .order('date', { ascending: false });
 
-      if (error) {
+        if (error) {
+          console.error('Error fetching transactions:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to load transactions: ${error.message}`,
+          });
+          throw error;
+        }
+
+        return data || [];
+      } catch (error: any) {
+        console.error('Error in transactions query:', error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Gagal memuat data transaksi",
+          description: `Failed to load transactions: ${error.message || 'Unknown error'}`,
         });
         throw error;
       }
-
-      return data || [];
     },
   });
 
   const addTransaction = useMutation({
     mutationFn: async (newTransaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {
       try {
+        console.log('Adding transaction:', newTransaction);
         const { data, error } = await supabase
           .from('transactions')
           .insert([newTransaction])
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error adding transaction:', error);
+          throw new Error(error.message || 'Failed to add transaction');
+        }
+        
+        if (!data) {
+          throw new Error('No data returned from transaction creation');
+        }
+        
+        console.log('Transaction added successfully:', data);
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error adding transaction:', error);
         throw error;
       }
     },
     onSuccess: () => {
+      console.log('Transaction added successfully, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       toast({
         title: "Berhasil",
         description: "Transaksi berhasil ditambahkan",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Gagal menambahkan transaksi",
+        description: `Failed to add transaction: ${error.message || 'Unknown error'}`,
       });
       console.error('Error adding transaction:', error);
     },
