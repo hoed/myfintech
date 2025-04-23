@@ -54,7 +54,7 @@ const Login = () => {
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 space-y-6">
           <div className="text-center">
             <img
-              src="/logo.svg"
+              src="/logo.png"
               alt="Logo"
               className="mx-auto h-12 w-auto text-primary"
             />
