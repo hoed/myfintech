@@ -1,10 +1,12 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { BankAccount } from "@/types";
 
 export const useBankAccounts = () => {
+  const queryClient = useQueryClient();
+  
   const { data: bankAccounts = [], isLoading } = useQuery({
     queryKey: ['bankAccounts'],
     queryFn: async () => {
@@ -26,5 +28,33 @@ export const useBankAccounts = () => {
     },
   });
 
-  return { bankAccounts, isLoading };
+  const addBankAccount = useMutation({
+    mutationFn: async (newAccount: Omit<BankAccount, 'id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('bank_accounts')
+        .insert([newAccount])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bankAccounts'] });
+      toast({
+        title: "Berhasil",
+        description: "Rekening bank berhasil ditambahkan",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Gagal menambahkan rekening bank",
+      });
+      console.error('Error adding bank account:', error);
+    },
+  });
+
+  return { bankAccounts, isLoading, addBankAccount };
 };

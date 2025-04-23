@@ -1,10 +1,12 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Account } from "@/types";
 
 export const useChartOfAccounts = () => {
+  const queryClient = useQueryClient();
+  
   const { data: accounts = [], isLoading } = useQuery<Account[]>({
     queryKey: ['chartOfAccounts'],
     queryFn: async () => {
@@ -26,5 +28,89 @@ export const useChartOfAccounts = () => {
     },
   });
 
-  return { accounts, isLoading };
+  const addAccount = useMutation({
+    mutationFn: async (newAccount: Omit<Account, 'id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('chart_of_accounts')
+        .insert([newAccount])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chartOfAccounts'] });
+      toast({
+        title: "Berhasil",
+        description: "Akun berhasil ditambahkan",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Gagal menambahkan akun",
+      });
+      console.error('Error adding account:', error);
+    },
+  });
+
+  const updateAccount = useMutation({
+    mutationFn: async (account: Account) => {
+      const { data, error } = await supabase
+        .from('chart_of_accounts')
+        .update(account)
+        .eq('id', account.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chartOfAccounts'] });
+      toast({
+        title: "Berhasil",
+        description: "Akun berhasil diperbarui",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Gagal memperbarui akun",
+      });
+      console.error('Error updating account:', error);
+    },
+  });
+
+  const deleteAccount = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('chart_of_accounts')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chartOfAccounts'] });
+      toast({
+        title: "Berhasil",
+        description: "Akun berhasil dihapus",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Gagal menghapus akun",
+      });
+      console.error('Error deleting account:', error);
+    },
+  });
+
+  return { accounts, isLoading, addAccount, updateAccount, deleteAccount };
 };
