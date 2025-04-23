@@ -49,9 +49,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div 
+      className="min-h-screen flex flex-col justify-between bg-[url('/public/background.webp')] bg-cover bg-center py-12 px-4 sm:px-6 lg:px-8"
+    >
       <div className="flex-grow flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 space-y-6">
+        <div className="max-w-md w-full bg-white/30 backdrop-blur-md border border-white/20 rounded-lg p-8 space-y-6">
           <div className="text-center">
             <img
               src="/logo.png"
@@ -156,7 +158,7 @@ const Login = () => {
           </form>
         </div>
       </div>
-      <footer className="text-center text-sm text-gray-500 mt-8">
+      <footer className="text-center text-sm text-gray-100 mt-8">
         © 2025 Hoed - MyFinTech. Semua Hak Dilindungi.
       </footer>
     </div>
