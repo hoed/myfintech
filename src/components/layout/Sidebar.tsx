@@ -106,10 +106,12 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className={cn(
-      "flex flex-col h-full bg-sidebar text-sidebar-foreground py-4 transition-all duration-300 ease-in-out",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
+    <div
+      className={cn(
+        "flex flex-col h-full bg-sidebar text-sidebar-foreground py-4 transition-all duration-300 ease-in-out",
+        isCollapsed ? "w-16" : "w-64"
+      )}
+    >
       <div className="flex items-center justify-between px-4 mb-4">
         {!isCollapsed && (
           <div>
@@ -124,10 +126,12 @@ const Sidebar = () => {
           {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
-      <nav className={cn(
-        "flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-hidden",
-        isCollapsed ? "items-center" : ""
-      )}>
+      <nav
+        className={cn(
+          "flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-y-auto h-full", // Enables scrolling for sidebar menu area
+          isCollapsed ? "items-center" : ""
+        )}
+      >
         {navigationItems.map((item) => (
           <NavLink
             key={item.href}
