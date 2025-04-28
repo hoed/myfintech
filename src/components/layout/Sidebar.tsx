@@ -114,7 +114,7 @@ const Sidebar = () => {
   return (
     <div
       className={cn(
-        "hidden md:block flex-col h-full bg-sidebar text-sidebar-foreground py-4 transition-all duration-300 ease-in-out",
+        "flex flex-col h-full bg-sidebar text-sidebar-foreground py-4 transition-all duration-300 ease-in-out",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
