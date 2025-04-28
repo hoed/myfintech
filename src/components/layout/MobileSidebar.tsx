@@ -57,7 +57,6 @@ const MobileSidebar = () => {
 
   const handleLogout = async () => {
     await logout();
-    closeSheet();
   };
 
   const navItems = [
@@ -72,66 +71,118 @@ const MobileSidebar = () => {
     { href: "/inventaris", icon: <CircleDollarSign size={20} />, label: "Inventaris" },
     { href: "/kalender", icon: <Calendar size={20} />, label: "Kalender" },
     { href: "/laporan", icon: <BarChart size={20} />, label: "Laporan" },
-    { href: "/pajak", icon: <BarChart size={20} />, label: "Pajak" },
     { href: "/pengguna", icon: <Users size={20} />, label: "Manajemen Pengguna" },
+    { href: "/pengaturan", icon: <Settings size={20} />, label: "Pengaturan" },
   ];
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu />
-          <span className="sr-only">Toggle menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent
-        side="left"
-        className={cn(
-          "p-0 bg-sidebar w-[280px] max-w-[80vw] rounded-r-3xl shadow-lg transform transition-transform duration-300 ease-in-out",
-          open ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        <div className="border-b border-sidebar-border px-6 py-5">
-          <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white" onClick={closeSheet}>
-            <DollarSign size={24} className="text-sidebar-primary" />
-            <span>Keuangan Mandiri</span>
-          </Link>
-        </div>
-
-        <div className="flex-1 overflow-auto py-4 px-4">
-          <nav className="grid gap-1">
-            {navItems.map((item) => (
-              <NavItem
-                key={item.href}
-                href={item.href}
-                icon={item.icon}
-                label={item.label}
-                onClick={closeSheet}
-              />
-            ))}
-            <NavItem
-              href="/profil"
-              icon={<User size={20} />}
-              label="Profil"
-              onClick={closeSheet}
-            />
-            <NavItem
-              href="/pengaturan"
-              icon={<Settings size={20} />}
-              label="Pengaturan"
-              onClick={closeSheet}
-            />
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-all"
+    <>
+      {/* Bottom Navigation for Mobile Devices */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-sidebar border-t border-sidebar-border shadow-lg">
+        <div className="flex justify-around items-center py-2">
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="flex flex-col items-center justify-center text-xs p-2"
             >
-              <LogOut size={20} />
-              <span>Sign Out</span>
-            </button>
-          </nav>
+              <Menu size={20} />
+              <span>Menu</span>
+            </Button>
+          </SheetTrigger>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="flex flex-col items-center justify-center text-xs p-2"
+            onClick={() => navigate("/profil")}
+          >
+            <User size={20} />
+            <span>Profil</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="flex flex-col items-center justify-center text-xs p-2"
+            onClick={() => navigate("/pengaturan")}
+          >
+            <Settings size={20} />
+            <span>Pengaturan</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="flex flex-col items-center justify-center text-xs p-2"
+            onClick={handleLogout}
+          >
+            <LogOut size={20} />
+            <span>Logout</span>
+          </Button>
         </div>
-      </SheetContent>
-    </Sheet>
+      </div>
+
+      {/* Sheet for Mobile Menu (triggered by Hamburger) */}
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="left" className="p-0 bg-sidebar w-[280px] max-w-[80vw]">
+          <div className="border-b border-sidebar-border px-6 py-5">
+            <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white" onClick={closeSheet}>
+              <DollarSign size={24} className="text-sidebar-primary" />
+              <span>Keuangan Mandiri</span>
+            </Link>
+          </div>
+
+          <div className="flex-1 overflow-auto py-4 px-4">
+            <nav className="grid gap-1">
+              {navItems.map((item) => (
+                <NavItem
+                  key={item.href}
+                  href={item.href}
+                  icon={item.icon}
+                  label={item.label}
+                  onClick={closeSheet}
+                />
+              ))}
+            </nav>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Sheet Trigger for Larger Screens (if needed) */}
+      <div className="hidden md:block">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu />
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 bg-sidebar w-[280px] max-w-[80vw]">
+            <div className="border-b border-sidebar-border px-6 py-5">
+              <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white" onClick={closeSheet}>
+                <DollarSign size={24} className="text-sidebar-primary" />
+                <span>Keuangan Mandiri</span>
+              </Link>
+            </div>
+
+            <div className="flex-1 overflow-auto py-4 px-4">
+              <nav className="grid gap-1">
+                {navItems.map((item) => (
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    icon={item.icon}
+                    label={item.label}
+                    onClick={closeSheet}
+                  />
+                ))}
+              </nav>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
   );
 };
 
