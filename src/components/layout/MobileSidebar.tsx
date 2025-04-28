@@ -78,15 +78,15 @@ const MobileSidebar = () => {
   return (
     <>
       {/* Bottom Navigation for Mobile Devices */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-sidebar border-t border-sidebar-border shadow-lg">
-        <div className="flex justify-around items-center py-2">
+      <div className="fixed bottom-0 left-0 right-0 z-[100] md:hidden border-t border-sidebar-border shadow-lg rounded-t-lg">
+        <div className="flex justify-around items-center py-3 bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] backdrop-blur-sm">
           <SheetTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="flex flex-col items-center justify-center text-xs p-2"
+              className="flex flex-col items-center justify-center text-sm p-3 text-white"
             >
-              <Menu size={20} />
+              <Menu size={24} />
               <span>Menu</span>
             </Button>
           </SheetTrigger>
@@ -94,30 +94,30 @@ const MobileSidebar = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="flex flex-col items-center justify-center text-xs p-2"
+            className="flex flex-col items-center justify-center text-sm p-3 text-white"
             onClick={() => navigate("/profil")}
           >
-            <User size={20} />
+            <User size={24} />
             <span>Profil</span>
           </Button>
 
           <Button
             variant="ghost"
             size="icon"
-            className="flex flex-col items-center justify-center text-xs p-2"
+            className="flex flex-col items-center justify-center text-sm p-3 text-white"
             onClick={() => navigate("/pengaturan")}
           >
-            <Settings size={20} />
+            <Settings size={24} />
             <span>Pengaturan</span>
           </Button>
 
           <Button
             variant="ghost"
             size="icon"
-            className="flex flex-col items-center justify-center text-xs p-2"
+            className="flex flex-col items-center justify-center text-sm p-3 text-white"
             onClick={handleLogout}
           >
-            <LogOut size={20} />
+            <LogOut size={24} />
             <span>Logout</span>
           </Button>
         </div>
