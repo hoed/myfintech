@@ -82,16 +82,39 @@ const MobileSidebar = () => {
       {/* Bottom Navigation for Mobile Devices */}
       <div className="fixed bottom-0 left-0 right-0 z-[1000] md:hidden border-t border-gray-700 shadow-lg rounded-t-2xl bg-[#1a1a1a] transition-all duration-300 ease-in-out">
         <div className="flex justify-around items-center py-3">
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="flex flex-col items-center justify-center text-sm p-3 text-white hover:bg-[#2a2a2a] rounded-full transition-colors"
-            >
-              <Menu size={24} />
-              <span>Menu</span>
-            </Button>
-          </SheetTrigger>
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="flex flex-col items-center justify-center text-sm p-3 text-white hover:bg-[#2a2a2a] rounded-full transition-colors"
+              >
+                <Menu size={24} />
+                <span>Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 bg-[#1a1a1a] w-[280px] max-w-[80vw] rounded-r-2xl shadow-lg">
+              <div className="border-b border-gray-700 px-6 py-5">
+                <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white" onClick={closeSheet}>
+                  <DollarSign size={24} className="text-blue-500" />
+                  <span>Keuangan Mandiri</span>
+                </Link>
+              </div>
+              <div className="flex-1 overflow-auto py-4 px-4">
+                <nav className="grid gap-1">
+                  {navItems.map((item) => (
+                    <NavItem
+                      key={item.href}
+                      href={item.href}
+                      icon={item.icon}
+                      label={item.label}
+                      onClick={closeSheet}
+                    />
+                  ))}
+                </nav>
+              </div>
+            </SheetContent>
+          </Sheet>
 
           <Button
             variant="ghost"
@@ -125,32 +148,6 @@ const MobileSidebar = () => {
         </div>
       </div>
 
-      {/* Sheet for Mobile Menu (triggered by Hamburger) */}
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="p-0 bg-[#1a1a1a] w-[280px] max-w-[80vw] rounded-r-2xl shadow-lg">
-          <div className="border-b border-gray-700 px-6 py-5">
-            <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white" onClick={closeSheet}>
-              <DollarSign size={24} className="text-blue-500" />
-              <span>Keuangan Mandiri</span>
-            </Link>
-          </div>
-
-          <div className="flex-1 overflow-auto py-4 px-4">
-            <nav className="grid gap-1">
-              {navItems.map((item) => (
-                <NavItem
-                  key={item.href}
-                  href={item.href}
-                  icon={item.icon}
-                  label={item.label}
-                  onClick={closeSheet}
-                />
-              ))}
-            </nav>
-          </div>
-        </SheetContent>
-      </Sheet>
-
       {/* Sheet for Larger Screens */}
       <div className="hidden md:block">
         <Sheet open={open} onOpenChange={setOpen}>
@@ -167,7 +164,6 @@ const MobileSidebar = () => {
                 <span>Keuangan Mandiri</span>
               </Link>
             </div>
-
             <div className="flex-1 overflow-auto py-4 px-4">
               <nav className="grid gap-1">
                 {navItems.map((item) => (
