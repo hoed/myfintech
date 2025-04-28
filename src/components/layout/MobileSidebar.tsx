@@ -33,10 +33,10 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, onClick }) => {
     <Link
       to={href}
       className={cn(
-        "flex flex-col items-center justify-center gap-1 p-2 text-xs transition-all",
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all",
         isActive
-          ? "text-primary"
-          : "text-sidebar-foreground hover:text-primary"
+          ? "bg-[#2a2a2a] text-white"
+          : "text-gray-300 hover:bg-[#2a2a2a] hover:text-white"
       )}
       onClick={onClick}
     >
@@ -48,7 +48,6 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, onClick }) => {
 
 const MobileSidebar = () => {
   const [open, setOpen] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -58,77 +57,99 @@ const MobileSidebar = () => {
 
   const handleLogout = async () => {
     await logout();
-    closeSheet();
+    navigate("/login");
   };
 
-  const bottomNavItems = [
+  const navItems = [
     { href: "/", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
     { href: "/transaksi", icon: <BookOpen size={20} />, label: "Transaksi" },
-    { href: "/akun", icon: <FileText size={20} />, label: "Akun" },
+    { href: "/akun", icon: <FileText size={20} />, label: "Bagan Akun" },
     { href: "/buku-besar", icon: <BookOpen size={20} />, label: "Buku Besar" },
-    { href: "/rekening-bank", icon: <CreditCard size={20} />, label: "Rekening" },
-    { href: "/hutang-piutang", icon: <Calculator size={20} />, label: "Hutang" },
+    { href: "/rekening-bank", icon: <CreditCard size={20} />, label: "Rekening Bank" },
+    { href: "/hutang-piutang", icon: <Calculator size={20} />, label: "Hutang & Piutang" },
     { href: "/pelanggan", icon: <Users size={20} />, label: "Pelanggan" },
     { href: "/pemasok", icon: <ShoppingCart size={20} />, label: "Pemasok" },
     { href: "/inventaris", icon: <CircleDollarSign size={20} />, label: "Inventaris" },
     { href: "/kalender", icon: <Calendar size={20} />, label: "Kalender" },
     { href: "/pajak", icon: <Calendar size={20} />, label: "Pajak" },
     { href: "/laporan", icon: <BarChart size={20} />, label: "Laporan" },
+    { href: "/pengguna", icon: <Users size={20} />, label: "Manajemen Pengguna" },
+    { href: "/pengaturan", icon: <Settings size={20} />, label: "Pengaturan" },
   ];
 
   return (
     <>
       {/* Bottom Navigation for Mobile Devices */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-sidebar border-t border-sidebar-border shadow-lg">
-        <div className="flex justify-between items-center px-2 py-1">
-          <div className="flex overflow-x-auto space-x-1">
-            {bottomNavItems.map((item) => (
-              <NavItem
-                key={item.href}
-                href={item.href}
-                icon={item.icon}
-                label={item.label}
-                onClick={closeSheet}
-              />
-            ))}
-          </div>
-          <div className="flex space-x-1">
+      <div className="fixed bottom-0 left-0 right-0 z-[1000] md:hidden border-t border-gray-700 shadow-lg rounded-t-2xl bg-[#1a1a1a] transition-all duration-300 ease-in-out">
+        <div className="flex justify-around items-center py-3">
+          <SheetTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="flex flex-col items-center justify-center text-xs p-2"
-              onClick={() => {
-                navigate("/profil");
-                closeSheet();
-              }}
+              className="flex flex-col items-center justify-center text-sm p-3 text-white hover:bg-[#2a2a2a] rounded-full transition-colors"
             >
-              <User size={20} />
-              <span>Profil</span>
+              <Menu size={24} />
+              <span>Menu</span>
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="flex flex-col items-center justify-center text-xs p-2"
-              onClick={handleLogout}
-            >
-              <LogOut size={20} />
-              <span>Logout</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="flex flex-col items-center justify-center text-xs p-2"
-              onClick={() => {
-                navigate("/pengaturan");
-                closeSheet();
-              }}
-            >
-              <Settings size={20} />
-              <span>Pengaturan</span>
-            </Button>
-          </div>
+          </SheetTrigger>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="flex flex-col items-center justify-center text-sm p-3 text-white hover:bg-[#2a2a2a] rounded-full transition-colors"
+            onClick={() => navigate("/profil")}
+          >
+            <User size={24} />
+            <span>Profil</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="flex flex-col items-center justify-center text-sm p-3 text-white hover:bg-[#2a2a2a] rounded-full transition-colors"
+            onClick={() => navigate("/pengaturan")}
+          >
+            <Settings size={24} />
+            <span>Pengaturan</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="flex flex-col items-center justify-center text-sm p-3 text-white hover:bg-[#2a2a2a] rounded-full transition-colors"
+            onClick={handleLogout}
+          >
+            <LogOut size={24} />
+            <span>Logout</span>
+          </Button>
         </div>
       </div>
+
+      {/* Sheet for Mobile Menu (triggered by Hamburger) */}
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="left" className="p-0 bg-[#1a1a1a] w-[280px] max-w-[80vw] rounded-r-2xl shadow-lg">
+          <div className="border-b border-gray-700 px-6 py-5">
+            <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white" onClick={closeSheet}>
+              <DollarSign size={24} className="text-blue-500" />
+              <span>Keuangan Mandiri</span>
+            </Link>
+          </div>
+
+          <div className="flex-1 overflow-auto py-4 px-4">
+            <nav className="grid gap-1">
+              {navItems.map((item) => (
+                <NavItem
+                  key={item.href}
+                  href={item.href}
+                  icon={item.icon}
+                  label={item.label}
+                  onClick={closeSheet}
+                />
+              ))}
+            </nav>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Sheet for Larger Screens */}
       <div className="hidden md:block">
@@ -139,17 +160,17 @@ const MobileSidebar = () => {
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 bg-sidebar w-[280px] max-w-[80vw]">
-            <div className="border-b border-sidebar-border px-6 py-5">
+          <SheetContent side="left" className="p-0 bg-[#1a1a1a] w-[280px] max-w-[80vw]">
+            <div className="border-b border-gray-700 px-6 py-5">
               <Link to="/" className="flex items-center gap-2 font-semibold text-xl text-white" onClick={closeSheet}>
-                <DollarSign size={24} className="text-sidebar-primary" />
+                <DollarSign size={24} className="text-blue-500" />
                 <span>Keuangan Mandiri</span>
               </Link>
             </div>
 
             <div className="flex-1 overflow-auto py-4 px-4">
               <nav className="grid gap-1">
-                {bottomNavItems.map((item) => (
+                {navItems.map((item) => (
                   <NavItem
                     key={item.href}
                     href={item.href}
@@ -158,18 +179,6 @@ const MobileSidebar = () => {
                     onClick={closeSheet}
                   />
                 ))}
-                <NavItem
-                  href="/pengguna"
-                  icon={<Users size={20} />}
-                  label="Manajemen Pengguna"
-                  onClick={closeSheet}
-                />
-                <NavItem
-                  href="/pengaturan"
-                  icon={<Settings size={20} />}
-                  label="Pengaturan"
-                  onClick={closeSheet}
-                />
               </nav>
             </div>
           </SheetContent>
