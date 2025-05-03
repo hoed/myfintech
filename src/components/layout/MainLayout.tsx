@@ -67,6 +67,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     const newState = !sidebarCollapsed;
     setSidebarCollapsed(newState);
     localStorage.setItem('sidebarCollapsed', String(newState));
+    
+    // Dispatch event for Sidebar component
+    const event = new CustomEvent('toggle-sidebar', { detail: { collapsed: newState } });
+    window.dispatchEvent(event);
   };
 
   if (isLoading) {
