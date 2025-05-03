@@ -63,10 +63,12 @@ export const useAppSettings = () => {
 
   const updateSetting = useMutation({
     mutationFn: async ({ key, value }: { key: string, value: any }) => {
+      console.log(`Updating setting ${key} to ${value}`);
+      
       // Convert value to string for storage if it's an object or boolean
       const stringValue = typeof value === 'object' 
         ? JSON.stringify(value) 
-        : value.toString();
+        : String(value);
       
       const { data: existingRecord, error: fetchError } = await supabase
         .from('app_settings')
@@ -74,33 +76,43 @@ export const useAppSettings = () => {
         .eq('setting_key', key)
         .maybeSingle();
         
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        console.error("Error checking existing record:", fetchError);
+        throw fetchError;
+      }
+      
+      let result;
       
       if (existingRecord) {
         // Update existing record
-        const { error } = await supabase
+        result = await supabase
           .from('app_settings')
           .update({ setting_value: stringValue })
           .eq('setting_key', key);
-          
-        if (error) throw error;
       } else {
         // Insert new record
-        const { error } = await supabase
+        result = await supabase
           .from('app_settings')
           .insert({ setting_key: key, setting_value: stringValue });
-          
-        if (error) throw error;
       }
+      
+      if (result.error) {
+        console.error("Error updating/inserting setting:", result.error);
+        throw result.error;
+      }
+      
+      return { key, value };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['appSettings'] });
       toast({
         title: "Berhasil",
         description: "Pengaturan berhasil diperbarui",
       });
+      console.log(`Successfully updated setting ${data.key} to ${data.value}`);
     },
     onError: (error) => {
+      console.error("Error in mutation:", error);
       toast({
         variant: "destructive",
         title: "Error",
