@@ -19,6 +19,16 @@ export function ToggleTheme({
   const { theme, setTheme } = useTheme();
   const { settings, updateSetting } = useAppSettings();
   
+  // Ensure theme is properly synchronized with app settings
+  React.useEffect(() => {
+    if (settings?.dark_mode !== undefined) {
+      const newTheme = settings.dark_mode ? "dark" : "light";
+      if (theme !== newTheme) {
+        setTheme(newTheme);
+      }
+    }
+  }, [settings?.dark_mode, theme, setTheme]);
+  
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);

@@ -34,22 +34,24 @@ export const useAppSettings = () => {
       return data.reduce((acc, curr) => {
         let value;
         try {
-          // Try to parse the value as JSON
-          if (typeof curr.setting_value === 'string') {
-            // Handle boolean values stored as strings
-            if (curr.setting_value === 'true') {
-              value = true;
-            } else if (curr.setting_value === 'false') {
-              value = false;
-            } else {
-              // Try JSON parse for other values
+          // Handle boolean values stored as strings
+          if (curr.setting_value === 'true') {
+            value = true;
+          } else if (curr.setting_value === 'false') {
+            value = false;
+          } else if (typeof curr.setting_value === 'string') {
+            // Try JSON parse for other values
+            try {
               value = JSON.parse(curr.setting_value);
+            } catch {
+              // If JSON parsing fails, use the raw string value
+              value = curr.setting_value;
             }
           } else {
             value = curr.setting_value;
           }
         } catch (e) {
-          // If parsing fails, use the raw value
+          // If any parsing fails, use the raw value
           value = curr.setting_value;
         }
         
@@ -65,7 +67,7 @@ export const useAppSettings = () => {
     mutationFn: async ({ key, value }: { key: string, value: any }) => {
       console.log(`Updating setting ${key} to ${value}`);
       
-      // Convert value to string for storage if it's an object or boolean
+      // Convert value to string for storage
       const stringValue = typeof value === 'object' 
         ? JSON.stringify(value) 
         : String(value);

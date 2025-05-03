@@ -20,15 +20,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
   const { settings } = useAppSettings();
 
+  // Apply theme from settings with proper boolean handling
   useEffect(() => {
-    // Apply theme from settings
     if (settings?.dark_mode !== undefined) {
-      setTheme(settings.dark_mode ? 'dark' : 'light');
+      const newTheme = Boolean(settings.dark_mode) ? 'dark' : 'light';
+      if (theme !== newTheme) {
+        setTheme(newTheme);
+        document.documentElement.classList.toggle('dark', Boolean(settings.dark_mode));
+      }
     }
-  }, [settings?.dark_mode, setTheme]);
+  }, [settings?.dark_mode, setTheme, theme]);
 
   useEffect(() => {
     const checkAuth = async () => {

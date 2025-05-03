@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,7 +36,7 @@ const Settings = () => {
   const { apiKeys, createApiKey, deleteApiKey, isLoading: apiKeysLoading } = useApiKeys();
   const [backups, setBackups] = useState<BackupRecord[]>([]);
   const [loadingBackups, setLoadingBackups] = useState(false);
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
 
   const handleCompanyUpdate = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,11 +59,14 @@ const Settings = () => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (appSettings?.dark_mode !== undefined) {
-      setTheme(appSettings.dark_mode ? 'dark' : 'light');
+      const currentTheme = appSettings.dark_mode ? 'dark' : 'light';
+      if (theme !== currentTheme) {
+        setTheme(currentTheme);
+      }
     }
-  }, [appSettings?.dark_mode, setTheme]);
+  }, [appSettings?.dark_mode, setTheme, theme]);
 
   const handleCreateApiKey = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -203,7 +206,7 @@ const Settings = () => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchBackups();
   }, []);
 
@@ -248,7 +251,7 @@ const Settings = () => {
                 <div className="flex items-center space-x-2">
                   <Switch 
                     id="auto-backup" 
-                    checked={appSettings?.auto_backup || false}
+                    checked={Boolean(appSettings?.auto_backup)}
                     onCheckedChange={(checked) => handleAppSettingChange('auto_backup', checked)}
                   />
                   <Label htmlFor="auto-backup">Backup Otomatis</Label>
@@ -275,7 +278,7 @@ const Settings = () => {
                   <div className="flex items-center space-x-2">
                     <Switch 
                       id="dark-mode" 
-                      checked={appSettings?.dark_mode || false}
+                      checked={Boolean(appSettings?.dark_mode)}
                       onCheckedChange={(checked) => handleAppSettingChange('dark_mode', checked)}
                     />
                     <Label htmlFor="dark-mode">Mode Gelap</Label>
