@@ -31,7 +31,7 @@ const Sidebar = () => {
     const newState = !isCollapsed;
     setIsCollapsed(newState);
     
-    // This will be handled by the ResizablePanel in MainLayout
+    // Dispatch event to notify MainLayout about sidebar state change
     const event = new CustomEvent('toggle-sidebar', { detail: { collapsed: newState } });
     window.dispatchEvent(event);
   };

@@ -62,12 +62,21 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     }
   }, [navigate]);
 
-  // Function to toggle sidebar state
-  const toggleSidebar = () => {
-    const newState = !sidebarCollapsed;
-    setSidebarCollapsed(newState);
-    localStorage.setItem('sidebarCollapsed', String(newState));
-  };
+  // Setup event listener for sidebar toggle events from sidebar component
+  useEffect(() => {
+    const handleSidebarToggle = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.collapsed !== undefined) {
+        setSidebarCollapsed(customEvent.detail.collapsed);
+        localStorage.setItem('sidebarCollapsed', String(customEvent.detail.collapsed));
+      }
+    };
+    
+    window.addEventListener('toggle-sidebar', handleSidebarToggle);
+    return () => {
+      window.removeEventListener('toggle-sidebar', handleSidebarToggle);
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -107,10 +116,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           onCollapse={() => {
             setSidebarCollapsed(true);
             localStorage.setItem('sidebarCollapsed', 'true');
+            // Dispatch event to notify sidebar component
+            window.dispatchEvent(new CustomEvent('toggle-sidebar', { detail: { collapsed: true } }));
           }}
           onExpand={() => {
             setSidebarCollapsed(false);
             localStorage.setItem('sidebarCollapsed', 'false');
+            // Dispatch event to notify sidebar component
+            window.dispatchEvent(new CustomEvent('toggle-sidebar', { detail: { collapsed: false } }));
           }}
           className="h-screen"
         >
@@ -119,8 +132,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
         <ResizableHandle withHandle />
 
-        <ResizablePanel defaultSize={80}>
-          <div className="flex-1 overflow-auto flex flex-col">
+        <ResizablePanel defaultSize={80} className="overflow-hidden">
+          <div className="flex-1 overflow-auto flex flex-col h-full">
             <Header />
             <div className="flex-1 relative">
               <main className="p-4 md:p-6 flex-1">
