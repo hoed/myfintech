@@ -13,7 +13,6 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 import {
   ResizablePanelGroup,
   ResizablePanel,
-  ResizableHandle
 } from "@/components/ui/resizable";
 
 interface MainLayoutProps {
@@ -129,8 +128,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         >
           <Sidebar />
         </ResizablePanel>
-
-        <ResizableHandle withHandle />
 
         <ResizablePanel defaultSize={80} className="overflow-hidden">
           <div className="flex-1 overflow-auto flex flex-col h-full">
