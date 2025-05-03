@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Home,
@@ -14,7 +15,10 @@ import {
   UserCog,
   ChevronLeft,
   ChevronRight,
-  FileChartLine
+  FileChartLine,
+  DollarSign,
+  BanknoteIcon,
+  WalletIcon
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { usePathname } from "@/hooks/use-pathname";
@@ -24,90 +28,107 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
 
-  const navigationItems = [
+  // Group navigation items by category for better organization
+  const navigationGroups = [
     {
-      title: "Dashboard",
-      href: "/",
-      icon: Home,
-      isSeparator: false,
+      title: "Utama",
+      items: [
+        {
+          title: "Dashboard",
+          href: "/",
+          icon: Home,
+        },
+        {
+          title: "Transaksi",
+          href: "/transaksi",
+          icon: CreditCard,
+        },
+      ]
     },
     {
-      title: "Transaksi",
-      href: "/transaksi",
-      icon: CreditCard,
-      isSeparator: false,
+      title: "Keuangan",
+      items: [
+        {
+          title: "Bagan Akun",
+          href: "/akun",
+          icon: BookOpenCheck,
+        },
+        {
+          title: "Buku Besar",
+          href: "/buku-besar",
+          icon: Book,
+        },
+        {
+          title: "Rekening Bank",
+          href: "/rekening",
+          icon: BanknoteIcon,
+        },
+        {
+          title: "Hutang & Piutang",
+          href: "/hutang-piutang",
+          icon: WalletIcon,
+        },
+      ]
     },
     {
-      title: "Bagan Akun",
-      href: "/akun",
-      icon: BookOpenCheck,
-      isSeparator: false,
+      title: "Relasi Bisnis",
+      items: [
+        {
+          title: "Pelanggan",
+          href: "/pelanggan",
+          icon: Users,
+        },
+        {
+          title: "Pemasok",
+          href: "/pemasok",
+          icon: ShoppingCart,
+        },
+      ]
     },
     {
-      title: "Buku Besar",
-      href: "/buku-besar",
-      icon: Book,
-      isSeparator: false,
-    },
-    {
-      title: "Rekening Bank",
-      href: "/rekening",
-      icon: Landmark,
-      isSeparator: false,
-    },
-    {
-      title: "Hutang & Piutang",
-      href: "/hutang-piutang",
-      icon: CreditCard,
-      isSeparator: false,
-    },
-    {
-      title: "Pelanggan",
-      href: "/pelanggan",
-      icon: Users,
-      isSeparator: false,
-    },
-    {
-      title: "Pemasok",
-      href: "/pemasok",
-      icon: ShoppingCart,
-      isSeparator: false,
-    },
-    {
-      title: "Inventaris",
-      href: "/inventaris",
-      icon: CircleDollarSign,
-      isSeparator: false,
-    },
-    {
-      title: "Kalender",
-      href: "/kalender",
-      icon: CalendarDays,
-      isSeparator: false,
+      title: "Inventaris & Lainnya",
+      items: [
+        {
+          title: "Inventaris",
+          href: "/inventaris",
+          icon: CircleDollarSign,
+        },
+        {
+          title: "Kalender",
+          href: "/kalender",
+          icon: CalendarDays,
+        },
+      ]
     },
     {
       title: "Laporan",
-      href: "/laporan",
-      icon: BarChart,
-      isSeparator: false,
+      items: [
+        {
+          title: "Laporan",
+          href: "/laporan",
+          icon: BarChart,
+        },
+        {
+          title: "Laporan Pajak",
+          href: "/pajak",
+          icon: FileChartLine,
+        },
+      ]
     },
     {
-      title: "Laporan Pajak",
-      href: "/pajak",
-      icon: FileChartLine,
-      isSeparator: false,
-    },
-    {
-      title: "Pengguna",
-      href: "/pengguna",
-      icon: UserCog,
-      isSeparator: false,
-    },
-    {
-      title: "Pengaturan",
-      href: "/pengaturan",
-      icon: Settings,
-      isSeparator: false,
+      title: "Sistem",
+      items: [
+        {
+          title: "Pengguna",
+          href: "/pengguna",
+          icon: UserCog,
+        },
+        {
+          title: "Pengaturan",
+          href: "/pengaturan",
+          icon: Settings,
+        },
+      ]
     },
   ];
 
@@ -128,33 +149,44 @@ const Sidebar = () => {
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="p-2 rounded-full hover:bg-sidebar-accent/50 transition-colors"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
       <nav
         className={cn(
-          "flex flex-col flex-1 px-2 mt-4 space-y-1 overflow-y-auto h-full",
+          "flex flex-col flex-1 px-2 mt-4 space-y-4 overflow-y-auto h-full",
           isCollapsed ? "items-center" : ""
         )}
       >
-        {navigationItems.map((item) => (
-          <NavLink
-            key={item.href}
-            to={item.href}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                isCollapsed ? "justify-center" : "",
-                isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
-              )
-            }
-          >
-            <item.icon className={cn("w-4 h-4", isCollapsed ? "mr-0" : "mr-2")} />
-            {!isCollapsed && <span>{item.title}</span>}
-          </NavLink>
+        {navigationGroups.map((group, index) => (
+          <div key={index} className="space-y-1">
+            {!isCollapsed && (
+              <h3 className="px-3 text-xs uppercase font-medium text-sidebar-foreground/50">
+                {group.title}
+              </h3>
+            )}
+            
+            {group.items.map((item) => (
+              <NavLink
+                key={item.href}
+                to={item.href}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    isCollapsed ? "justify-center" : "",
+                    isActive
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                  )
+                }
+              >
+                <item.icon className={cn("w-4 h-4", isCollapsed ? "mr-0" : "mr-2")} />
+                {!isCollapsed && <span>{item.title}</span>}
+              </NavLink>
+            ))}
+          </div>
         ))}
       </nav>
     </div>

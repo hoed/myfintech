@@ -1,8 +1,9 @@
+
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, DollarSign, LogOut, User, Settings } from "lucide-react";
+import { Menu, DollarSign, LogOut, User, Settings, BanknoteIcon, WalletIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -60,21 +61,52 @@ const MobileSidebar = () => {
     navigate("/login");
   };
 
-  const navItems = [
-    { href: "/", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
-    { href: "/transaksi", icon: <BookOpen size={20} />, label: "Transaksi" },
-    { href: "/akun", icon: <FileText size={20} />, label: "Bagan Akun" },
-    { href: "/buku-besar", icon: <BookOpen size={20} />, label: "Buku Besar" },
-    { href: "/rekening-bank", icon: <CreditCard size={20} />, label: "Rekening Bank" },
-    { href: "/hutang-piutang", icon: <Calculator size={20} />, label: "Hutang & Piutang" },
-    { href: "/pelanggan", icon: <Users size={20} />, label: "Pelanggan" },
-    { href: "/pemasok", icon: <ShoppingCart size={20} />, label: "Pemasok" },
-    { href: "/inventaris", icon: <CircleDollarSign size={20} />, label: "Inventaris" },
-    { href: "/kalender", icon: <Calendar size={20} />, label: "Kalender" },
-    { href: "/pajak", icon: <Calendar size={20} />, label: "Pajak" },
-    { href: "/laporan", icon: <BarChart size={20} />, label: "Laporan" },
-    { href: "/pengguna", icon: <Users size={20} />, label: "Manajemen Pengguna" },
-    { href: "/pengaturan", icon: <Settings size={20} />, label: "Pengaturan" },
+  // Group navigation items by category for better organization
+  const navGroups = [
+    {
+      title: "Utama",
+      items: [
+        { href: "/", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
+        { href: "/transaksi", icon: <CreditCard size={20} />, label: "Transaksi" },
+      ]
+    },
+    {
+      title: "Keuangan",
+      items: [
+        { href: "/akun", icon: <FileText size={20} />, label: "Bagan Akun" },
+        { href: "/buku-besar", icon: <BookOpen size={20} />, label: "Buku Besar" },
+        { href: "/rekening", icon: <BanknoteIcon size={20} />, label: "Rekening Bank" },
+        { href: "/hutang-piutang", icon: <WalletIcon size={20} />, label: "Hutang & Piutang" },
+      ]
+    },
+    {
+      title: "Relasi Bisnis",
+      items: [
+        { href: "/pelanggan", icon: <Users size={20} />, label: "Pelanggan" },
+        { href: "/pemasok", icon: <ShoppingCart size={20} />, label: "Pemasok" },
+      ]
+    },
+    {
+      title: "Inventaris & Lainnya",
+      items: [
+        { href: "/inventaris", icon: <CircleDollarSign size={20} />, label: "Inventaris" },
+        { href: "/kalender", icon: <Calendar size={20} />, label: "Kalender" },
+      ]
+    },
+    {
+      title: "Laporan",
+      items: [
+        { href: "/laporan", icon: <BarChart size={20} />, label: "Laporan" },
+        { href: "/pajak", icon: <Calculator size={20} />, label: "Pajak" },
+      ]
+    },
+    {
+      title: "Sistem",
+      items: [
+        { href: "/pengguna", icon: <Users size={20} />, label: "Manajemen Pengguna" },
+        { href: "/pengaturan", icon: <Settings size={20} />, label: "Pengaturan" },
+      ]
+    },
   ];
 
   return (
@@ -101,15 +133,20 @@ const MobileSidebar = () => {
                 </Link>
               </div>
               <div className="flex-1 overflow-auto py-4 px-4">
-                <nav className="grid gap-1">
-                  {navItems.map((item) => (
-                    <NavItem
-                      key={item.href}
-                      href={item.href}
-                      icon={item.icon}
-                      label={item.label}
-                      onClick={closeSheet}
-                    />
+                <nav className="grid gap-6">
+                  {navGroups.map((group, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <h4 className="text-xs uppercase font-medium text-gray-400 px-3 mb-1">{group.title}</h4>
+                      {group.items.map((item) => (
+                        <NavItem
+                          key={item.href}
+                          href={item.href}
+                          icon={item.icon}
+                          label={item.label}
+                          onClick={closeSheet}
+                        />
+                      ))}
+                    </div>
                   ))}
                 </nav>
               </div>
@@ -165,15 +202,20 @@ const MobileSidebar = () => {
               </Link>
             </div>
             <div className="flex-1 overflow-auto py-4 px-4">
-              <nav className="grid gap-1">
-                {navItems.map((item) => (
-                  <NavItem
-                    key={item.href}
-                    href={item.href}
-                    icon={item.icon}
-                    label={item.label}
-                    onClick={closeSheet}
-                  />
+              <nav className="grid gap-6">
+                {navGroups.map((group, idx) => (
+                  <div key={idx} className="space-y-1">
+                    <h4 className="text-xs uppercase font-medium text-gray-400 px-3 mb-1">{group.title}</h4>
+                    {group.items.map((item) => (
+                      <NavItem
+                        key={item.href}
+                        href={item.href}
+                        icon={item.icon}
+                        label={item.label}
+                        onClick={closeSheet}
+                      />
+                    ))}
+                  </div>
                 ))}
               </nav>
             </div>
