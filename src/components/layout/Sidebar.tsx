@@ -12,6 +12,8 @@ import {
   CalendarDays,
   BarChart,
   UserCog,
+  ChevronLeft,
+  ChevronRight,
   FileChartLine,
   BanknoteIcon,
   WalletIcon
@@ -23,6 +25,16 @@ import { cn } from "@/lib/utils";
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
+
+  // Function to toggle sidebar state
+  const toggleSidebar = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    
+    // This will be handled by the ResizablePanel in MainLayout
+    const event = new CustomEvent('toggle-sidebar', { detail: { collapsed: newState } });
+    window.dispatchEvent(event);
+  };
 
   // Load saved state from localStorage
   useEffect(() => {
@@ -158,18 +170,20 @@ const Sidebar = () => {
         isCollapsed ? "w-16" : "w-64"
       )}
     >
-      <div className="flex items-center justify-center px-4 mb-4">
+      <div className="flex items-center justify-between px-4 mb-4">
         {!isCollapsed && (
           <div>
             <h1 className="text-lg md:text-xl font-bold">MyFinTech</h1>
             <p className="text-xs text-sidebar-foreground/70">v1.0.0</p>
           </div>
         )}
-        {isCollapsed && (
-          <div className="flex justify-center items-center h-10">
-            <span className="text-xl font-bold">MF</span>
-          </div>
-        )}
+        <button 
+          onClick={toggleSidebar}
+          className="p-2 rounded-full hover:bg-sidebar-accent/50 transition-colors"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
       </div>
       <nav
         className={cn(
