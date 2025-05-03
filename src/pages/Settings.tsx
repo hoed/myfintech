@@ -36,7 +36,7 @@ const Settings = () => {
   const { apiKeys, createApiKey, deleteApiKey, isLoading: apiKeysLoading } = useApiKeys();
   const [backups, setBackups] = useState<BackupRecord[]>([]);
   const [loadingBackups, setLoadingBackups] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   const handleCompanyUpdate = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -271,13 +271,18 @@ const Settings = () => {
                   </Select>
                 </div>
                 <Separator />
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="dark-mode" 
-                    checked={appSettings?.dark_mode || false}
-                    onCheckedChange={(checked) => handleAppSettingChange('dark_mode', checked)}
-                  />
-                  <Label htmlFor="dark-mode">Mode Gelap</Label>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Switch 
+                      id="dark-mode" 
+                      checked={appSettings?.dark_mode || false}
+                      onCheckedChange={(checked) => handleAppSettingChange('dark_mode', checked)}
+                    />
+                    <Label htmlFor="dark-mode">Mode Gelap</Label>
+                  </div>
+                  <div className="text-muted-foreground text-sm">
+                    Saat ini: {appSettings?.dark_mode ? "Aktif" : "Nonaktif"}
+                  </div>
                 </div>
               </CardContent>
             </Card>

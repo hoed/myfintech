@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import MobileSidebar from "./MobileSidebar";
@@ -7,6 +8,8 @@ import { Toaster } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "next-themes";
+import { useAppSettings } from "@/hooks/useAppSettings";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -17,6 +20,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { setTheme } = useTheme();
+  const { settings } = useAppSettings();
+
+  useEffect(() => {
+    // Apply theme from settings
+    if (settings?.dark_mode !== undefined) {
+      setTheme(settings.dark_mode ? 'dark' : 'light');
+    }
+  }, [settings?.dark_mode, setTheme]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -42,7 +54,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     }
   }, [navigate]);
 
-  // Function to toggle sidebar state (not used anymore, but keep for potential sidebar collapse state management)
+  // Function to toggle sidebar state
   const toggleSidebar = () => {
     const newState = !sidebarCollapsed;
     setSidebarCollapsed(newState);
@@ -51,14 +63,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
+      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
         <p className="text-lg">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {!isMobile && (
         <div className={`${sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-64'} transition-all duration-300 ease-in-out h-screen`}>
           <Sidebar />
@@ -67,7 +79,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <div className="flex-1 overflow-auto flex flex-col">
         <Header />
         <div className="flex-1 relative">
-          {/* Remove sidebar arrow toggle button here */}
           <main className="p-4 md:p-6 flex-1">
             {children}
           </main>
