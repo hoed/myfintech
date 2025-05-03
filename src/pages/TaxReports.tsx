@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ const TaxReports: React.FC = () => {
     e.preventDefault();
 
     const selectedTaxType = TAX_TYPES.find(t => t.key === newType);
-    const reportType = selectedTaxType?.reportType === "monthly" ? "monthly" :
+    const reportTypeValue = selectedTaxType?.reportType === "monthly" ? "monthly" :
                        selectedTaxType?.reportType === "daily" ? "daily" : "yearly";
                        
     const newReport = await addReport.mutateAsync({
@@ -43,7 +44,7 @@ const TaxReports: React.FC = () => {
       type: newType,
       income: newIncome,
       expense: newExpense,
-      reportType: reportType,
+      reporttype: reportTypeValue, // Changed from reportType to reporttype to match the database schema
     });
     
     setNewDialog(false);
