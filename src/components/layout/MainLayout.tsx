@@ -99,12 +99,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <div className="flex h-screen bg-background">
       <ResizablePanelGroup direction="horizontal" className="h-screen w-full">
         <ResizablePanel 
-          defaultSize={20} 
+          defaultSize={sidebarCollapsed ? 0 : 20} 
           minSize={15} 
           maxSize={25}
           collapsible={true}
           collapsedSize={0}
-          collapsed={sidebarCollapsed}
           onCollapse={() => {
             setSidebarCollapsed(true);
             localStorage.setItem('sidebarCollapsed', 'true');

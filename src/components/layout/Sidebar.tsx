@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Home,
@@ -41,6 +42,21 @@ const Sidebar = () => {
     if (savedState) {
       setIsCollapsed(savedState === 'true');
     }
+  }, []);
+
+  // Listen for sidebar toggle events from MainLayout
+  useEffect(() => {
+    const handleSidebarToggle = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.collapsed !== undefined) {
+        setIsCollapsed(customEvent.detail.collapsed);
+      }
+    };
+    
+    window.addEventListener('toggle-sidebar', handleSidebarToggle);
+    return () => {
+      window.removeEventListener('toggle-sidebar', handleSidebarToggle);
+    };
   }, []);
 
   // Group navigation items by category for better organization
