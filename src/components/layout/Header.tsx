@@ -6,6 +6,7 @@ import { User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrencyRates } from "@/hooks/useCurrencyRates";
 import { formatRupiah } from "@/lib/formatter";
+import { ToggleTheme } from "@/components/ui/toggle-theme";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Header = () => {
   };
 
   return (
-    <header className="border-b bg-white p-4 flex items-center justify-between">
+    <header className="border-b bg-background p-4 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <h1 className="text-lg font-medium md:hidden">Keuangan Mandiri</h1>
       </div>
@@ -44,6 +45,9 @@ const Header = () => {
           <LogOut size={16} />
           <span>Logout</span>
         </Button>
+        <div className="hidden md:block">
+          <ToggleTheme />
+        </div>
       </div>
     </header>
   );

@@ -15,8 +15,7 @@ const Footer: React.FC<FooterProps> = ({
   
   return (
     <footer className={cn(
-      "w-full p-4 border-t text-center text-sm",
-      variant === 'light' ? "bg-white text-gray-500" : "bg-sidebar text-white",
+      "w-full p-4 border-t text-center text-sm bg-background text-foreground",
       className
     )}>
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">

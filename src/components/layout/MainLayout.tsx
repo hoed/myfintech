@@ -29,7 +29,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       const newTheme = Boolean(settings.dark_mode) ? 'dark' : 'light';
       if (theme !== newTheme) {
         setTheme(newTheme);
-        document.documentElement.classList.toggle('dark', Boolean(settings.dark_mode));
       }
     }
   }, [settings?.dark_mode, setTheme, theme]);
@@ -67,14 +66,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="flex h-screen items-center justify-center bg-background">
         <p className="text-lg">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-background">
       {!isMobile && (
         <div className={`${sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-64'} transition-all duration-300 ease-in-out h-screen`}>
           <Sidebar />

@@ -47,6 +47,7 @@ export function ToggleTheme({
       size={size}
       onClick={toggleTheme}
       aria-label="Toggle theme"
+      title={theme === "light" ? "Enable dark mode" : "Enable light mode"}
     >
       {theme === "light" ? (
         <Moon className="h-[1.2rem] w-[1.2rem]" />
