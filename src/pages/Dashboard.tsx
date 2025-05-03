@@ -172,46 +172,25 @@ const Dashboard = () => {
             <FinancialChart dailyData={dailyData} monthlyData={monthlyData} yearlyData={yearlyData} />
           </div>
           <div className="lg:col-span-1">
-            <div className="grid gap-6">
-              <div className="rounded-lg border bg-card p-6 shadow-sm">
-                <h3 className="text-lg font-medium mb-2">Ringkasan Keuangan</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total Aset</span>
-                    <span className="font-medium">{formatRupiah(totalAssets)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total Kewajiban</span>
-                    <span className="font-medium">{formatRupiah(totalLiabilities)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Ekuitas</span>
-                    <span className="font-medium">{formatRupiah(totalEquity)}</span>
-                  </div>
-                  <div className="pt-2 border-t">
-                    <div className="flex justify-between">
-                      <span className="font-medium">Laba Bersih (YTD)</span>
-                      <span className="font-medium text-success">{formatRupiah(monthlyIncome - monthlyExpense)}</span>
-                    </div>
-                  </div>
+            <div className="rounded-lg border bg-card p-6 shadow-sm">
+              <h3 className="text-lg font-medium mb-2">Ringkasan Keuangan</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Aset</span>
+                  <span className="font-medium">{formatRupiah(totalAssets)}</span>
                 </div>
-              </div>
-              <div className="rounded-lg border bg-card p-6 shadow-sm">
-                <h3 className="text-lg font-medium mb-2">Nilai Tukar</h3>
-                <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Kewajiban</span>
+                  <span className="font-medium">{formatRupiah(totalLiabilities)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Ekuitas</span>
+                  <span className="font-medium">{formatRupiah(totalEquity)}</span>
+                </div>
+                <div className="pt-2 border-t">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">1 USD</span>
-                    <span className="font-medium">{formatRupiah(15650)}</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground text-right">
-                    Diperbarui: {new Date().toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    })}, {new Date().toLocaleTimeString('id-ID', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })} WIB
+                    <span className="font-medium">Laba Bersih (YTD)</span>
+                    <span className="font-medium text-success">{formatRupiah(monthlyIncome - monthlyExpense)}</span>
                   </div>
                 </div>
               </div>
