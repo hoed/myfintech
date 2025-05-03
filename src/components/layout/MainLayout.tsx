@@ -10,6 +10,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle
+} from "@/components/ui/resizable";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -72,23 +77,61 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     );
   }
 
+  if (isMobile) {
+    return (
+      <div className="flex h-screen bg-background">
+        <div className="flex-1 overflow-auto flex flex-col">
+          <Header />
+          <div className="flex-1 relative">
+            <main className="p-4 md:p-6 flex-1">
+              {children}
+            </main>
+          </div>
+          <Footer />
+        </div>
+        <MobileSidebar />
+        <Toaster position="top-right" richColors />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-background">
-      {!isMobile && (
-        <div className={`${sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-64'} transition-all duration-300 ease-in-out h-screen`}>
+      <ResizablePanelGroup direction="horizontal" className="h-screen w-full">
+        <ResizablePanel 
+          defaultSize={20} 
+          minSize={15} 
+          maxSize={25}
+          collapsible={true}
+          collapsedSize={0}
+          collapsed={sidebarCollapsed}
+          onCollapse={() => {
+            setSidebarCollapsed(true);
+            localStorage.setItem('sidebarCollapsed', 'true');
+          }}
+          onExpand={() => {
+            setSidebarCollapsed(false);
+            localStorage.setItem('sidebarCollapsed', 'false');
+          }}
+          className="h-screen"
+        >
           <Sidebar />
-        </div>
-      )}
-      <div className="flex-1 overflow-auto flex flex-col">
-        <Header />
-        <div className="flex-1 relative">
-          <main className="p-4 md:p-6 flex-1">
-            {children}
-          </main>
-        </div>
-        <Footer />
-      </div>
-      {isMobile && <MobileSidebar />}
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        <ResizablePanel defaultSize={80}>
+          <div className="flex-1 overflow-auto flex flex-col">
+            <Header />
+            <div className="flex-1 relative">
+              <main className="p-4 md:p-6 flex-1">
+                {children}
+              </main>
+            </div>
+            <Footer />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
       <Toaster position="top-right" richColors />
     </div>
   );

@@ -1,12 +1,10 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Home,
   Settings,
   CreditCard,
   BookOpenCheck,
   Book,
-  Landmark,
   Users,
   ShoppingCart,
   CircleDollarSign,
@@ -16,7 +14,6 @@ import {
   ChevronLeft,
   ChevronRight,
   FileChartLine,
-  DollarSign,
   BanknoteIcon,
   WalletIcon
 } from "lucide-react";
@@ -27,6 +24,24 @@ import { cn } from "@/lib/utils";
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
+
+  // Function to toggle sidebar state
+  const toggleSidebar = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    
+    // This will be handled by the ResizablePanel in MainLayout
+    const event = new CustomEvent('toggle-sidebar', { detail: { collapsed: newState } });
+    window.dispatchEvent(event);
+  };
+
+  // Load saved state from localStorage
+  useEffect(() => {
+    const savedState = localStorage.getItem('sidebarCollapsed');
+    if (savedState) {
+      setIsCollapsed(savedState === 'true');
+    }
+  }, []);
 
   // Group navigation items by category for better organization
   const navigationGroups = [
@@ -147,7 +162,7 @@ const Sidebar = () => {
           </div>
         )}
         <button 
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={toggleSidebar}
           className="p-2 rounded-full hover:bg-sidebar-accent/50 transition-colors"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
