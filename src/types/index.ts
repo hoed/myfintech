@@ -94,6 +94,7 @@ export interface Report {
   debt_id?: string; // Added to match database schema
   account_id?: string; // Added to match database schema
   transaction_id?: string; // Added to match database schema
+  reportType?: string; // Adding reportType property to match what's used in TaxReports.tsx
 }
 
 export type TaxType = 'ppn' | 'pph21' | 'pph23' | 'pph25';

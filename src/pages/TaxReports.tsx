@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -44,7 +43,7 @@ const TaxReports: React.FC = () => {
       type: newType,
       income: newIncome,
       expense: newExpense,
-      reporttype: reportTypeValue, // Changed from reportType to reporttype to match the database schema
+      reportType: reportTypeValue, // Using reportType to match the type definition
     });
     
     setNewDialog(false);
