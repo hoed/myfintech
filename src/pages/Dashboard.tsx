@@ -10,11 +10,13 @@ import { CreditCard, ArrowUpDown, DollarSign, Wallet } from "lucide-react";
 import { useChartOfAccounts } from "@/hooks/useChartOfAccounts";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useDebtReceivables } from "@/hooks/useDebtReceivables";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { accounts } = useChartOfAccounts();
   const { transactions } = useTransactions();
   const { debtReceivables } = useDebtReceivables();
+  const navigate = useNavigate();
 
   // Sample data for demonstration purposes
   const dailyData = [
@@ -109,6 +111,11 @@ const Dashboard = () => {
         }))
     : [];
 
+  // Function to navigate to tax reports page
+  const navigateToTaxReports = () => {
+    navigate('/pajak');
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -125,7 +132,7 @@ const Dashboard = () => {
         <NewFeatureBanner 
           title="Fitur Baru: Laporan Pajak PPN"
           description="Laporan pajak otomatis untuk kepatuhan perpajakan di Indonesia"
-          ctaAction={() => console.log('Navigating to tax reports')}
+          ctaAction={navigateToTaxReports}
         />
 
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
